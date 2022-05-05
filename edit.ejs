@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Document</title>
+</head>
+
+<body>
+	<h1>掲示板</h1>
+	<p>コメントの編集</p>
+	<form method="post" action="/send">
+		<input type="hidden" name="id" value="<%= book.id %>" />
+		<input placeholder="名前" name="name" value="<%= book.name %>" />
+		<input placeholder="コメント" name="age" value="<%= book.age %>" />
+		<button>編集</button>
+	</form>
+	<form method="post" action="/delete">
+		<input type="hidden" name="id" value="<%= book.id %>" />
+		<button>コメントを削除</button>
+	</form>
+	<br>
+	<a href=/>掲示板に戻る</a>
+</body>
+
+</html>
