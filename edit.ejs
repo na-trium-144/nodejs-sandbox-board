@@ -9,10 +9,10 @@
 <body>
 	<h1>SandBoxBoard</h1>
 	<p>コメントの編集</p>
-	<form method="post" action="/send">
+	<form method="post" action="/send_edit">
 		<input type="hidden" name="id" value="<%= book.id %>" />
 		<input placeholder="名前" name="name" value="<%= book.name %>" />
-		<input placeholder="コメント" name="age" value="<%= book.age %>" />
+		<input placeholder="コメント" name="content" value="<%= book.content %>" />
 		<button>編集</button>
 	</form>
 	<form method="post" action="/delete">
