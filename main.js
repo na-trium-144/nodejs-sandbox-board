@@ -13,9 +13,7 @@ let comments = JSON.parse(fs.readFileSync("comments.json", "utf-8"));
 app.post("/delete", (request, response) => {
     comments = comments.filter((m) => (m.id !== parseInt(request.body.id, 10)));
     fs.writeFileSync("comments.json", JSON.stringify(comments), "utf-8");
-    response.send(
-        `<h1>掲示板</h1><p>コメントを削除しました。</p><a href=/>掲示板に戻る</a>`
-    );
+    response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントを削除しました。" }));
 });
 
 app.post("/send", (request, response) => {
@@ -36,19 +34,15 @@ app.post("/send", (request, response) => {
             //     message.name = "名無し";
             // }
         comments.push(message);
-        response.send(
-            `<h1>掲示板</h1><p>送信しました。</p><a href=/>掲示板に戻る</a>`
-        );
+        response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントを送信しました。" }));
     }else{
         message.edited = true;
         const editTargetIndex = comments.findIndex((m) => (m.id === parseInt(request.body.id, 10)));
         if(editTargetIndex === -1){
-            response.send("<h1>掲示板</h1><p>コメントが存在しません</p><a href=/>掲示板に戻る</a>");
+            response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントが存在しません。" }));
         }else{
             comments[editTargetIndex] = message;
-            response.send(
-                `<h1>掲示板</h1><p>編集しました。</p><a href=/>掲示板に戻る</a>`
-            );
+            response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントを編集しました。" }));
         }
     }
     fs.writeFileSync("comments.json", JSON.stringify(comments), "utf-8");
@@ -62,7 +56,7 @@ app.get("/", (request, response) => {
 app.get("/edit", (request, response) => {
     const editTargetIndex = comments.findIndex((m) => (m.id === parseInt(request.query.id, 10)));
     if(editTargetIndex === -1){
-        response.send("<h1>掲示板</h1><p>コメントが存在しません</p><a href=/>掲示板に戻る</a>");
+        response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントが存在しません。" }));
     }else{
         const template = fs.readFileSync("edit.ejs", "utf-8");
         const html = ejs.render(template, { book:comments[editTargetIndex] });
