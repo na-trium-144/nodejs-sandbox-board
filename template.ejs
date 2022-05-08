@@ -25,7 +25,7 @@
 					<% if(book.edited){ %>
 						編集済み:
 					<% } %>
-					<%= format(book.time, "y/M/d(eee) H:mm:ss") %>
+					<script>document.write(new Date("<%= book.time.toJSON() %>").toLocaleString());</script>
 				)</i>
 				<input type="hidden" name="id" value="<%= book.id %>">
 				<button>編集</button>

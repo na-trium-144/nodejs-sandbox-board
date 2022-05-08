@@ -1,7 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const ejs = require("ejs");
-const dateFns = require("date-fns");
+// const dateFns = require("date-fns");
 // const format = dateFns;
 
 const app = express();
@@ -33,7 +33,7 @@ app.post("/send", async (request, response) => {
         name: request.body.name,
         content:request.body.content,
         edited:false,
-        time:new Date(),
+        time:new Date()
         // id:parseInt(request.body.id, 10)
     };
     // if(request.body.id === undefined){
@@ -54,7 +54,8 @@ app.post("/send_edit", async (request, response) => {
             data:{
                 name:request.body.name,
                 content:request.body.content,
-                edited:true
+                edited:true,
+                time:new Date()
             },
             where:{
                 id:parseInt(request.body.id, 10)
@@ -76,9 +77,13 @@ app.post("/send_edit", async (request, response) => {
 });
 
 app.get("/", async (request, response) => {
-  const comments = await client.comment.findMany();
+  const comments = await client.comment.findMany({
+      orderBy:{
+          id:"asc"
+      }
+  });
   const template = fs.readFileSync("template.ejs", "utf-8");
-  const html = ejs.render(template, { books: comments, format: dateFns.format });
+  const html = ejs.render(template, { books: comments });
   response.send(html);
 });
 app.get("/edit", async (request, response) => {
