@@ -28,6 +28,8 @@ app.post("/delete", async (request, response) => {
     }
 });
 
+const pokemonGachaContent = fs.readFileSync("pokemon.txt", "utf-8").split("\n")
+
 app.post("/send", async (request, response) => {
     message = {
         name: request.body.name,
@@ -44,6 +46,17 @@ app.post("/send", async (request, response) => {
         // }
         // comments.push(message);
     await client.comment.create({data:message});
+    if(message.content === "ポケモンガチャ"){
+        message = {
+            name: "Bot",
+            content: pokemonGachaContent[Math.floor(Math.random() * pokemonGachaContent.length)],
+            edited:false,
+            time:new Date()
+            // id:parseInt(request.body.id, 10)
+        };
+        await client.comment.create({data:message});
+
+    }
     response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントを送信しました。" }));
     // }
 });
