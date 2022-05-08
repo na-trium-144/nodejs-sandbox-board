@@ -14,14 +14,18 @@ const client = new PrismaClient();
 // const comments = client.comment.findMany();
 
 app.post("/delete", async (request, response) => {
-    await client.comment.delete({
-        where:{
-            id:parseInt(request.body.id, 10)
-        }
-    });
-    // comments = comments.filter((m) => (m.id !== parseInt(request.body.id, 10)));
-    // fs.writeFileSync("comments.json", JSON.stringify(comments), "utf-8");
-    response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントを削除しました。" }));
+    try{
+        await client.comment.delete({
+            where:{
+                id:parseInt(request.body.id, 10)
+            }
+        });
+        // comments = comments.filter((m) => (m.id !== parseInt(request.body.id, 10)));
+        // fs.writeFileSync("comments.json", JSON.stringify(comments), "utf-8");
+        response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントを削除しました。" }));
+    }catch(error){
+        response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントの削除時にエラーが発生しました。" }));
+    }
 });
 
 app.post("/send", async (request, response) => {
@@ -45,26 +49,30 @@ app.post("/send", async (request, response) => {
 });
 app.post("/send_edit", async (request, response) => {
     // else{
-    await client.comment.update({
-        data:{
-            name:request.body.name,
-            content:request.body.content,
-            edited:true
-        },
-        where:{
-            id:parseInt(request.body.id, 10)
-        }
-    });
-        // message.edited = true;
-        // const editTargetIndex = comments.findIndex((m) => (m.id === parseInt(request.body.id, 10)));
-        // if(editTargetIndex === -1){
-        //     response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントが存在しません。" }));
-        // }else{
-        //     comments[editTargetIndex] = message;
-    response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントを編集しました。" }));
+    try{
+        await client.comment.update({
+            data:{
+                name:request.body.name,
+                content:request.body.content,
+                edited:true
+            },
+            where:{
+                id:parseInt(request.body.id, 10)
+            }
+        });
+            // message.edited = true;
+            // const editTargetIndex = comments.findIndex((m) => (m.id === parseInt(request.body.id, 10)));
+            // if(editTargetIndex === -1){
+            //     response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントが存在しません。" }));
+            // }else{
+            //     comments[editTargetIndex] = message;
+        response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントを編集しました。" }));
+            // }
         // }
-    // }
-    // fs.writeFileSync("comments.json", JSON.stringify(comments), "utf-8");
+        // fs.writeFileSync("comments.json", JSON.stringify(comments), "utf-8");
+    }catch{
+        response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントの編集時にエラーが発生しました。" }));
+    }
 });
 
 app.get("/", async (request, response) => {
@@ -74,18 +82,22 @@ app.get("/", async (request, response) => {
   response.send(html);
 });
 app.get("/edit", async (request, response) => {
-    const comment = await client.comment.findUnique({
-        where:{
-            id:parseInt(request.query.id, 10)
-        }
-    });
-    // const editTargetIndex = comments.findIndex((m) => (m.id === parseInt(request.query.id, 10)));
-    // if(editTargetIndex === -1){
-    //     response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントが存在しません。" }));
-    // }else{
-    const template = fs.readFileSync("edit.ejs", "utf-8");
-    const html = ejs.render(template, { book:comment });
-    response.send(html);
-    // }
+    try{
+        const comment = await client.comment.findUnique({
+            where:{
+                id:parseInt(request.query.id, 10)
+            }
+        });
+        // const editTargetIndex = comments.findIndex((m) => (m.id === parseInt(request.query.id, 10)));
+        // if(editTargetIndex === -1){
+        //     response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントが存在しません。" }));
+        // }else{
+        const template = fs.readFileSync("edit.ejs", "utf-8");
+        const html = ejs.render(template, { book:comment });
+        response.send(html);
+        // }
+    }catch{
+        response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントの編集時にエラーが発生しました。" }));
+    }
 });
 app.listen(process.env.PORT || 3000);
