@@ -13,6 +13,10 @@ const client = new PrismaClient();
 
 // const comments = client.comment.findMany();
 
+function redirectMain(response, anchor){
+    response.status(303).set("Location", "/#" + anchor).end();
+}
+
 app.post("/delete", async (request, response) => {
     try{
         await client.comment.delete({
@@ -22,9 +26,14 @@ app.post("/delete", async (request, response) => {
         });
         // comments = comments.filter((m) => (m.id !== parseInt(request.body.id, 10)));
         // fs.writeFileSync("comments.json", JSON.stringify(comments), "utf-8");
-        response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントを削除しました。" }));
-    }catch(error){
-        response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントの削除時にエラーが発生しました。" }));
+        //response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), {
+        //    text: "コメントを削除しました。"
+        //}));
+        redirectMain(response, "latest");
+    } catch (error) {
+        response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), {
+            text: "コメントの削除時にエラーが発生しました。"
+        }));
     }
 });
 
@@ -57,7 +66,11 @@ app.post("/send", async (request, response) => {
         await client.comment.create({data:message});
 
     }
-    response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントを送信しました。" }));
+    //fs.writeFileSync(commentsFile, JSON.stringify(comments), "utf-8");
+    //response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), {
+    //    text: "コメントを送信しました。"
+    //}));
+    redirectMain(response, "latest");
     // }
 });
 app.post("/send_edit", async (request, response) => {
@@ -80,8 +93,11 @@ app.post("/send_edit", async (request, response) => {
             //     response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントが存在しません。" }));
             // }else{
             //     comments[editTargetIndex] = message;
-        response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), { text:"コメントを編集しました。" }));
             // }
+        //response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), {
+        //    text: "コメントを編集しました。"
+        //}));
+        redirectMain(response, parseInt(request.body.id, 10));
         // }
         // fs.writeFileSync("comments.json", JSON.stringify(comments), "utf-8");
     }catch{

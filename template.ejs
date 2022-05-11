@@ -9,9 +9,11 @@
 <body>
 	<h1>SandBoxBoard</h1>
 	<p>誰でも自由に編集や削除ができる匿名掲示板です。</p>
+	<a href=#latest>一番下へ行く</a>
 	<ul>
 		<% for (const book of books) { %>
 		<li>
+		    <a name=<%= book.id %>>
 			<form action="/edit">
 				<b>
 					<% if(book.name === ""){ %>
@@ -30,14 +32,17 @@
 				<input type="hidden" name="id" value="<%= book.id %>">
 				<button>編集</button>
 			</form>
+			</a>
 		</li>
 		<% } %>
 	</ul>
+	<a name=latest>
 	<form method="post" action="/send">
 		<input placeholder="名前" name="name" />
 		<input placeholder="コメント" name="content" />
 		<button>送信</button>
 	</form>
+	</a>
 </body>
 
 </html>
