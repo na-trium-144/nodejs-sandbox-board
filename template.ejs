@@ -38,11 +38,18 @@
 	</ul>
 	<a name=latest>
 	<form method="post" action="/send">
-		<input placeholder="名前" name="name" />
-		<input placeholder="コメント" name="content" />
+		<input placeholder="名前" name="name"
+		    <% if(name !== undefined){ %>
+		        value="<%= name %>"
+		    <% } %>
+		/>
+		<input placeholder="コメント" name="content" id="content" />
 		<button>送信</button>
 	</form>
 	</a>
+	<% if(focus !== undefined){ %>
+	    <script>document.body.onload = () => {document.getElementById("content").focus();};</script>
+    <% } %>
 </body>
 
 </html>

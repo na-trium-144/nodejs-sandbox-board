@@ -13,8 +13,12 @@ const client = new PrismaClient();
 
 // const comments = client.comment.findMany();
 
-function redirectMain(response, anchor){
-    response.status(303).set("Location", "/#" + anchor).end();
+function redirectMain(response, anchor, name, focus){
+    if(focus){
+        response.status(303).set("Location", "/?focus=1&name=" + name + "#" + anchor).end();
+    }else{
+        response.status(303).set("Location", "/#" + anchor).end();
+    }
 }
 
 app.post("/delete", async (request, response) => {
@@ -29,7 +33,7 @@ app.post("/delete", async (request, response) => {
         //response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), {
         //    text: "コメントを削除しました。"
         //}));
-        redirectMain(response, "latest");
+        redirectMain(response, "latest", "", false);
     } catch (error) {
         response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), {
             text: "コメントの削除時にエラーが発生しました。"
@@ -70,7 +74,7 @@ app.post("/send", async (request, response) => {
     //response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), {
     //    text: "コメントを送信しました。"
     //}));
-    redirectMain(response, "latest");
+    redirectMain(response, "latest", request.body.name, true);
     // }
 });
 app.post("/send_edit", async (request, response) => {
@@ -97,7 +101,7 @@ app.post("/send_edit", async (request, response) => {
         //response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), {
         //    text: "コメントを編集しました。"
         //}));
-        redirectMain(response, parseInt(request.body.id, 10));
+        redirectMain(response, parseInt(request.body.id, 10), "", false);
         // }
         // fs.writeFileSync("comments.json", JSON.stringify(comments), "utf-8");
     }catch{
@@ -112,8 +116,12 @@ app.get("/", async (request, response) => {
       }
   });
   const template = fs.readFileSync("template.ejs", "utf-8");
-  const html = ejs.render(template, { books: comments });
-  response.send(html);
+    const html = ejs.render(template, {
+        name: request.query.name,
+        focus: request.query.focus,
+        books: comments
+    });
+    response.send(html);
 });
 app.get("/edit", async (request, response) => {
     try{
