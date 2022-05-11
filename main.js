@@ -15,7 +15,7 @@ const client = new PrismaClient();
 
 function redirectMain(response, anchor, name, focus){
     if(focus){
-        response.status(303).set("Location", "/?focus=1&name=" + name + "#" + anchor).end();
+        response.status(303).set("Location", "/?focus=1&name=" + encodeURIComponent(name) + "#" + anchor).end();
     }else{
         response.status(303).set("Location", "/#" + anchor).end();
     }
