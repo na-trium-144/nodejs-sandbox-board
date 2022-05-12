@@ -14,7 +14,7 @@
 					<% if(book.edited){ %>
 						編集済み:
 					<% } %>
-					<script>document.write(new Date("<%= book.time %>").toLocaleString());</script>
+					<%= book.time %>
 				)</i>
 				<input type="hidden" name="id" value="<%= book.id %>">
 				<button>編集</button>

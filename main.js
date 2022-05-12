@@ -1,8 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const ejs = require("ejs");
-// const dateFns = require("date-fns");
-// const format = dateFns;
+const { format, addHours } = require("date-fns");
 
 const app = express();
 // app.use(express.static("static"));
@@ -109,6 +108,20 @@ app.post("/send_edit", async (request, response) => {
     }
 });
 
+function getCommentsHTML(comments, start, end){
+    const template = fs.readFileSync("comments.ejs", "utf-8");
+    const html = ejs.render(template, {
+        books: comments.slice(start, end).map((m) => ({
+            name: m.name,
+            content: m.content,
+            edited: m.edited,
+            id: m.id,
+            time: format(addHours(new Date(m.time), 9), "y/M/d(eee) H:mm:ss")
+        }))
+    });
+    return html;
+}
+
 app.get("/", async (request, response) => {
   const comments = await client.comment.findMany({
       orderBy:{
@@ -117,11 +130,24 @@ app.get("/", async (request, response) => {
   });
     let start = comments.length - 20;
     let end = comments.length;
+    let startid = 0;
+    let endid = 0;
+    if(start < 0){
+        start = 0;
+    }
+    if(start < comments.length){
+        startid = comments[start].id;
+    }
+    if(end - 1 >= 0){
+        endid = comments[end - 1].id;
+    }
     const template = fs.readFileSync("template.ejs", "utf-8");
     const html = ejs.render(template, {
         name: request.query.name,
         focus: request.query.focus,
-        books: comments.slice(start, end)
+        comments: getCommentsHTML(comments, start, end),
+        startid: startid,
+        endid: endid
     });
     response.send(html);
 });
@@ -132,9 +158,9 @@ app.get("/comments", async (request, response) => {
         }
     });
     let end = 0;
-    let endid = -1;
+    let endid = 0;
     let start = 0;
-    let startid = -1;
+    let startid = 0;
     let count = 20;
     if(request.query.count !== undefined){
         count = parseInt(request.query.count, 10);
@@ -151,7 +177,9 @@ app.get("/comments", async (request, response) => {
         if(start < 0){
             start = 0;
         }
-        startid = comments[start].id;
+        if(start < comments.length){
+            startid = comments[start].id;
+        }
     }else if(request.query.startid !== undefined){
         start = 1 + comments.findIndex((m) => (m.id === parseInt(request.query.startid, 10)));
         if(start === 1 + -1){
@@ -161,12 +189,11 @@ app.get("/comments", async (request, response) => {
         if(end > comments.length){
             end = comments.length;
         }
-        endid = comments[end - 1].id;
+        if(end - 1 >= 0){
+            endid = comments[end - 1].id;
+        }
     }
-    const template = fs.readFileSync("comments.ejs", "utf-8");
-    const html = ejs.render(template, {
-        books: comments.slice(start, end)
-    });
+    const html = getCommentsHTML(comments, start, end);
     response.json({startid: startid, endid: endid, html: html});
 });
 app.get("/edit", async (request, response) => {
