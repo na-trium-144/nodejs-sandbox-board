@@ -1,0 +1,24 @@
+		<% for (const book of books) { %>
+		<li>
+		    <a name=<%= book.id %>>
+			<form action="/edit">
+				<b>
+					<% if(book.name === ""){ %>
+						名無し
+					<% }else{ %>
+						<%= book.name %>
+					<% } %>
+				:</b>
+				<%= book.content %>
+				<i style="color:gray">(
+					<% if(book.edited){ %>
+						編集済み:
+					<% } %>
+					<script>document.write(new Date("<%= book.time %>").toLocaleString());</script>
+				)</i>
+				<input type="hidden" name="id" value="<%= book.id %>">
+				<button>編集</button>
+			</form>
+			</a>
+		</li>
+		<% } %>

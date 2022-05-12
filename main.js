@@ -115,11 +115,30 @@ app.get("/", async (request, response) => {
           id:"asc"
       }
   });
-  const template = fs.readFileSync("template.ejs", "utf-8");
+    let start = comments.length - 50;
+    let end = comments.length;
+    const template = fs.readFileSync("template.ejs", "utf-8");
     const html = ejs.render(template, {
         name: request.query.name,
         focus: request.query.focus,
-        books: comments
+        books: comments.slice(start, end)
+    });
+    response.send(html);
+});
+app.get("/comments", async (request, response) => {
+    const comments = await client.comment.findMany({
+        orderBy:{
+            id:"asc"
+        }
+    });
+    let end = comments.findIndex((m) => (m.id === parseInt(request.query.lastid, 10)));
+    let start = end - 50;
+    if(start < 0){
+        start = 0;
+    }
+    const template = fs.readFileSync("comments.ejs", "utf-8");
+    const html = ejs.render(template, {
+        books: comments.slice(start, end)
     });
     response.send(html);
 });

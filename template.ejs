@@ -9,8 +9,9 @@
 <body>
 	<h1>SandBoxBoard</h1>
 	<p>誰でも自由に編集や削除ができる匿名掲示板です。</p>
+	<button id=load_before>前の50件を読み込む</button>
 	<a href=#latest>一番下へ行く</a>
-	<ul>
+	<ul id=comments>
 		<% for (const book of books) { %>
 		<li>
 		    <a name=<%= book.id %>>
@@ -47,9 +48,23 @@
 		<button>送信</button>
 	</form>
 	</a>
+	<script>
+		let startId = <%= books[0].id %>;
+		document.getElementById("load_before").onclick = () => {
+			const http = new XMLHttpRequest();
+			http.open("get", "/comments?lastid=" + startId);
+			http.send();
+			http.onreadystatechange = () => {
+				if (http.readyState == 4 && http.status == 200) {
+					const place = document.getElementById("comments");
+					place.innerHTML = http.responseText + place.innerHTML;
+				}
+			};
+		};
 	<% if(focus !== undefined){ %>
-	    <script>document.body.onload = () => {document.getElementById("content").focus();};</script>
+	    document.body.onload = () => {document.getElementById("content").focus();};
     <% } %>
+    </script>
 </body>
 
 </html>
