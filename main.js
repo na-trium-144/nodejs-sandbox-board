@@ -115,7 +115,7 @@ app.get("/", async (request, response) => {
           id:"asc"
       }
   });
-    let start = comments.length - 50;
+    let start = comments.length - 20;
     let end = comments.length;
     const template = fs.readFileSync("template.ejs", "utf-8");
     const html = ejs.render(template, {
@@ -131,16 +131,43 @@ app.get("/comments", async (request, response) => {
             id:"asc"
         }
     });
-    let end = comments.findIndex((m) => (m.id === parseInt(request.query.lastid, 10)));
-    let start = end - 50;
-    if(start < 0){
-        start = 0;
+    let end = 0;
+    let endid = -1;
+    let start = 0;
+    let startid = -1;
+    let count = 20;
+    if(request.query.count !== undefined){
+        count = parseInt(request.query.count, 10);
+        if(count < 0){
+            count = comments.length;
+        }
+    }
+    if(request.query.lastid !== undefined){
+        end = comments.findIndex((m) => (m.id === parseInt(request.query.lastid, 10)));
+        if(end === -1){
+            end = 0;
+        }
+        start = end - count;
+        if(start < 0){
+            start = 0;
+        }
+        startid = comments[start].id;
+    }else if(request.query.startid !== undefined){
+        start = 1 + comments.findIndex((m) => (m.id === parseInt(request.query.startid, 10)));
+        if(start === 1 + -1){
+            start = comment.length;
+        }
+        end = start + count;
+        if(end > comments.length){
+            end = comments.length;
+        }
+        endid = comments[end - 1].id;
     }
     const template = fs.readFileSync("comments.ejs", "utf-8");
     const html = ejs.render(template, {
         books: comments.slice(start, end)
     });
-    response.send(html);
+    response.json({startid: startid, endid: endid, html: html});
 });
 app.get("/edit", async (request, response) => {
     try{
