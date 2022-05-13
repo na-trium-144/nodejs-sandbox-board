@@ -183,7 +183,7 @@ app.get("/comments", async (request, response) => {
     }else if(request.query.startid !== undefined){
         start = 1 + comments.findIndex((m) => (m.id === parseInt(request.query.startid, 10)));
         if(start === 1 + -1){
-            start = comment.length;
+            start = comments.length;
         }
         end = start + count;
         if(end > comments.length){
