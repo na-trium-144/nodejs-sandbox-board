@@ -1,24 +1,33 @@
-		<% for (const book of books) { %>
-		<li>
-		    <a name=<%= book.id %>>
-			<form action="/edit">
-				<b>
-					<% if(book.name === ""){ %>
-						名無し
-					<% }else{ %>
-						<%= book.name %>
-					<% } %>
-				:</b>
-				<%= book.content %>
-				<i style="color:gray">(
-					<% if(book.edited){ %>
-						編集済み:
-					<% } %>
-					<%= book.time %>
-				)</i>
-				<input type="hidden" name="id" value="<%= book.id %>">
-				<button>編集</button>
-			</form>
-			</a>
-		</li>
-		<% } %>
+<% for (const book of books) { %>
+<div class="comment_item">
+	<a name=<%= book.id %>>
+	<form action="/edit">
+	<div style="padding-bottom: 5px; display: table; width: 100%;">
+		<span style="display:table-cell; text-align:left;">
+			<b>
+			<% if(book.name === ""){ %>
+				名無し
+			<% }else{ %>
+				<%= book.name %>
+			<% } %>
+			</b>
+			<i style="padding-left: 10px; color:gray;">(
+			<% if(book.edited){ %>
+				編集済み:
+			<% } %>
+			<%= book.time %>
+		)
+			</i>
+		</span>
+		<span style="display: table-cell;text-align: right;">
+			<input type="hidden" name="id" value="<%= book.id %>">
+			<button>編集</button>
+		</span>
+	</div>
+	<div style="padding-left: 5px; padding-right: 5px;">
+		<%= book.content %>
+	</div>
+	</form>
+	</a>
+</div>
+<% } %>

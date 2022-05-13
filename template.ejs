@@ -4,28 +4,43 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>SandBoxBoard</title>
+	<style>
+		.comment_item{
+			padding: 5px;
+		}
+		.comment_item:hover{
+			padding: 5px;
+			background-color: #ffd;
+		}
+	</style>
 </head>
 
 <body>
-	<h1>SandBoxBoard</h1>
+	<div style="position: fixed; width: 100%; height: 60px; padding: 20px; top:0; left:0;background-color:#dff;">
+	<h1 style="margin: 0;">SandBoxBoard</h1>
 	<p>誰でも自由に編集や削除ができる匿名掲示板です。</p>
+	</div>
+	<div style="margin-top: 110px;">
 	<button id=load_before>前の20件を表示</button>
 	<button id=load_before_all>すべてのコメントを表示</button>
 	<a href=#latest>一番下へ行く</a>
-	<ul id=comments>
-	    <%- comments %>
-	</ul>
-	<a name=latest>
+	</div>
+	<div id=comments style="padding-top: 10px; padding-bottom: 10px;">
+		<%- comments %>
+	</div>
+	<div style="margin-bottom: 50px;">
+	<a name=latest></a>
+	</div>
+	<div style="position:fixed; bottom:0; left:0;width:100%; background-color: #ddd; padding:15px;">
 	<form method="post" action="/send">
 		<input placeholder="名前" name="name"
-		    <% if(name !== undefined){ %>
-		        value="<%= name %>"
-		    <% } %>
+			<% if(name !== undefined){ %>
+				value="<%= name %>"
+			<% } %>
 		/>
 		<input placeholder="コメント" name="content" id="content" />
 		<button>送信</button>
 	</form>
-	</a>
 	<script>
 		let startId = <%= startid %>;
 		let endId = <%= endid %>;
@@ -69,12 +84,12 @@
 					//window.location.hash = startId.toString();
 					endId = res.endid;
 				}
-			};			
+			};
 		}, 10000);
 	<% if(focus !== undefined){ %>
-	    document.body.onload = () => {document.getElementById("content").focus();};
-    <% } %>
-    </script>
+		document.body.onload = () => {document.getElementById("content").focus();};
+	<% } %>
+	</script>
 </body>
 
 </html>
