@@ -41,8 +41,8 @@
 			</form>
 		</div>
 		<script>
-			let startId = < %= startid % > ;
-			let endId = < %= endid % > ;
+			let startId = <%= startid %> ;
+			let endId = <%= endid %> ;
 			document.getElementById("load_before").onclick = () => {
 				const http = new XMLHttpRequest();
 				http.open("get", "/comments?lastid=" + startId);
