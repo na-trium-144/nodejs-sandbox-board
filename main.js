@@ -17,6 +17,11 @@ const {
 } = require("@prisma/client");
 const client = new PrismaClient();
 
+const tf = require('@tensorflow/tfjs');
+const toxicity = require('@tensorflow-models/toxicity');
+var txModel = undefined;
+toxicity.load(0.9).then((model) => {txModel = model;});
+
 // const comments = client.comment.findMany();
 
 function redirectMain(response, anchor, name, focus) {
@@ -49,10 +54,31 @@ app.post("/delete", async (request, response) => {
 
 const pokemonGachaContent = fs.readFileSync("pokemon.txt", "utf-8").split("\n")
 
+async function txCheck(content){
+    var txResult = [];
+	try{
+		const txPrediction = await txModel.classify(content);
+		console.log(txPrediction.map((p) => ({label:p.label, match:p.results[0].match})));
+        for(const p of txPrediction){
+            if(p.results[0].match === true){
+                txResult.push(p.label);
+            }
+        }
+        if(txResult.length > 0){
+            //content += " [" + txResult.join(", ") + "]"
+            content = "[有害度検知: " + txResult.join(",") + "]"
+        }
+	}catch{
+        
+	}
+    return content;
+}
 app.post("/send", async (request, response) => {
-	message = {
+	var content = request.body.content;
+    content = await txCheck(content);
+	const message = {
 		name: request.body.name,
-		content: request.body.content,
+		content: content,
 		edited: false,
 		time: new Date()
 		// id:parseInt(request.body.id, 10)
@@ -90,10 +116,12 @@ app.post("/send", async (request, response) => {
 app.post("/send_edit", async (request, response) => {
 	// else{
 	try {
+		var content = request.body.content;
+		content = await txCheck(content);
 		await client.comment.update({
 			data: {
 				name: request.body.name,
-				content: request.body.content,
+				content: content,
 				edited: true,
 				time: new Date()
 			},
