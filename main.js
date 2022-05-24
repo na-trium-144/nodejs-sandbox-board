@@ -269,6 +269,7 @@ app.get("/template.js", (request, response)=>{
 	response.send(fs.readFileSync("template.js", "utf-8"));
 });
 app.get("/template.css", (request, response)=>{
+	response.header("Content-Type", "text/css")
 	response.send(fs.readFileSync("template.css", "utf-8"));
 });
 app.listen(process.env.PORT || 3000);
