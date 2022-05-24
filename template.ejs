@@ -4,36 +4,27 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>SandBoxBoard</title>
-	<style>
-		.comment_item {
-			padding: 5px;
-		}
-
-		.comment_item:hover {
-			padding: 5px;
-			background-color: #ffd;
-		}
-	</style>
+	<link rel="stylesheet" href="template.css" />
 </head>
 
 <body>
 	<div style="font-family:sans-serif">
-		<div style="position: fixed; width: 100%; height: 60px; padding: 20px; top:0; left:0;background-color:#dff;">
-			<h1 style="margin: 0; height:30px;">SandBoxBoard</h1>
-			<div style="margin-top:10px; height:20px;">誰でも自由に編集や削除ができる匿名掲示板です。</div>
+		<div class="header">
+			<h1 class="header1">SandBoxBoard</h1>
+			<div class="header2">誰でも自由に編集や削除ができる匿名掲示板です。</div>
 		</div>
-		<div style="margin-top: 110px;">
+		<div class="comments_begin">
 			<button id=load_before>前の20件を表示</button>
 			<button id=load_before_all>すべてのコメントを表示</button>
 			<a href=#latest>一番下へ行く</a>
 		</div>
-		<div id=comments style="padding-top: 10px; padding-bottom: 10px;">
+		<div id="comments" class="comments">
 			<%- comments %>
 		</div>
-		<div style="margin-bottom: 50px;">
+		<div class="comments_last">
 			<a name=latest></a>
 		</div>
-		<div style="position:fixed; bottom:0; left:0;width:100%; background-color: #ddd; padding:15px;">
+		<div class="footer">
 			<form method="post" action="/send">
 				<input placeholder="名前" name="name" <% if(name !== undefined){ %> value="<%= name %>" <% } %> />
 				<input placeholder="コメント" name="content" id="content" />
@@ -43,54 +34,13 @@
 		<script>
 			let startId = <%= startid %> ;
 			let endId = <%= endid %> ;
-			document.getElementById("load_before").onclick = () => {
-				const http = new XMLHttpRequest();
-				http.open("get", "/comments?lastid=" + startId);
-				http.send();
-				http.onreadystatechange = () => {
-					if (http.readyState == 4 && http.status == 200) {
-						const place = document.getElementById("comments");
-						res = JSON.parse(http.responseText);
-						place.innerHTML = res.html + place.innerHTML;
-						//window.location.hash = startId.toString();
-						startId = res.startid;
-					}
-				};
-			};
-			document.getElementById("load_before_all").onclick = () => {
-				const http = new XMLHttpRequest();
-				http.open("get", "/comments?count=-1&lastid=" + startId);
-				http.send();
-				http.onreadystatechange = () => {
-					if (http.readyState == 4 && http.status == 200) {
-						const place = document.getElementById("comments");
-						res = JSON.parse(http.responseText);
-						place.innerHTML = res.html + place.innerHTML;
-						//window.location.hash = startId.toString();
-						startId = res.startid;
-					}
-				};
-			};
-			setInterval(() => {
-				const http = new XMLHttpRequest();
-				http.open("get", "/comments?count=-1&startid=" + endId);
-				http.send();
-				http.onreadystatechange = () => {
-					if (http.readyState == 4 && http.status == 200) {
-						const place = document.getElementById("comments");
-						res = JSON.parse(http.responseText);
-						place.innerHTML = place.innerHTML + res.html;
-						//window.location.hash = startId.toString();
-						endId = res.endid;
-					}
-				};
-			}, 10000);
 			<% if (focus !== undefined) { %>
 				document.body.onload = () => {
 					document.getElementById("content").focus();
 				};
 			<% } %>
 		</script>
+		<script src="template.js"></script>
 </body>
 
 </html>

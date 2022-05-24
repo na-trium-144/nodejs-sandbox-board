@@ -1,0 +1,46 @@
+.header {
+	position: fixed;
+	width: 100%;
+	height: 60px;
+	padding: 20px;
+	top:0;
+	left:0;
+	background-color:#dff;
+}
+.header1 {
+	margin: 0;
+	height:30px;
+}
+
+.header2 {
+	margin-top:10px;
+	height:20px;
+}
+.comments_begin {
+	margin-top: 110px;
+}
+.comments_last {
+	margin-bottom: 50px;
+}
+.comments {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+.comment_item {
+	padding: 5px;
+}
+
+.comment_item:hover {
+	padding: 5px;
+	background-color: #ffd;
+}
+
+.footer {
+	margin-bottom: 50px;
+	position:fixed;
+	bottom:0;
+	left:0;
+	width:100%;
+	background-color: #ddd;
+	padding:15px;
+}
