@@ -149,22 +149,22 @@ app.post("/send_edit", async (request, response) => {
 	}
 });
 
-function getCommentsHTML(comments, start, end) {
+function getCommentHTML(comment) {
 	const template = fs.readFileSync("comments.ejs", "utf-8");
 	const html = ejs.render(template, {
-		books: comments.slice(start, end).map((m) => ({
-			name: m.name,
-			content: m.content,
-			edited: m.edited,
-			id: m.id,
-			time: format(addHours(new Date(m.time), 9), "y/M/d(eee) H:mm:ss")
-		}))
+		book: {
+			name: comment.name,
+			content: comment.content,
+			edited: comment.edited,
+			id: comment.id,
+			time: format(addHours(new Date(comment.time), 9), "y/M/d(eee) H:mm:ss")
+		}
 	});
 	return html;
 }
 
 app.get("/", async (request, response) => {
-	const comments = await client.comment.findMany({
+	/*const comments = await client.comment.findMany({
 		orderBy: {
 			id: "asc"
 		}
@@ -181,66 +181,69 @@ app.get("/", async (request, response) => {
 	}
 	if (end - 1 >= 0) {
 		endid = comments[end - 1].id;
-	}
+	}*/
 	const template = fs.readFileSync("template.ejs", "utf-8");
 	const html = ejs.render(template, {
 		name: request.query.name,
 		focus: request.query.focus,
-		comments: getCommentsHTML(comments, start, end),
-		startid: startid,
-		endid: endid
+		//comments: getCommentsHTML(comments, start, end),
+		//startid: startid,
+		//endid: endid
 	});
 	response.send(html);
 });
+
+//startidより前の20件を返す
 app.get("/comments", async (request, response) => {
-	const comments = await client.comment.findMany({
-		orderBy: {
-			id: "asc"
-		}
-	});
-	let end = 0;
-	let endid = 0;
-	let start = 0;
-	let startid = 0;
+	let comments;
+	if(request.query.startid !== undefined){
+		comments = await client.comment.findMany({
+			orderBy: {id: "asc"},
+			where: {id: {lt: parseInt(request.query.startid, 10)}}
+		});
+	}else{
+		comments = await client.comment.findMany({
+			orderBy: {id: "asc"},
+		});
+	}
 	let count = 20;
-	if (request.query.count !== undefined) {
-		count = parseInt(request.query.count, 10);
-		if (count < 0) {
-			count = comments.length;
-		}
+	if(request.query.all !== undefined){
+		count = comments.length;
 	}
-	if (request.query.lastid !== undefined) {
-		end = comments.findIndex((m) => (m.id === parseInt(request.query.lastid, 10)));
-		if (end === -1) {
-			end = 0;
-		}
-		start = end - count;
-		if (start < 0) {
-			start = 0;
-		}
-		if (start < comments.length) {
-			startid = comments[start].id;
-		}
-	} else if (request.query.startid !== undefined) {
-		start = 1 + comments.findIndex((m) => (m.id === parseInt(request.query.startid, 10)));
-		if (start === 1 + -1) {
-			start = comments.length;
-		}
-		end = start + count;
-		if (end > comments.length) {
-			end = comments.length;
-		}
-		if (end - 1 >= 0) {
-			endid = comments[end - 1].id;
-		}
-	}
-	const html = getCommentsHTML(comments, start, end);
 	response.json({
-		startid: startid,
-		endid: endid,
-		html: html
+		time: new Date().toJSON(),
+		comments: comments.slice(-count).map((m) => ({
+			id: m.id,
+			html: getCommentHTML(m)
+		}))
 	});
 });
+//startid以降でtime以降に変更されたものを返す
+app.get("/diff", async (request, response) => {
+	let comments;
+	if(request.query.startid !== undefined){
+		comments = await client.comment.findMany({
+			orderBy: {id: "asc"},
+			where: {time: {gte: new Date(request.query.time)}}
+		});	
+	}else{
+		comments = await client.comment.findMany({
+			orderBy: {id: "asc"},
+			where: {
+				id: {gte: parseInt(request.query.startid, 10)},
+				time: {gte: new Date(request.query.time)}
+			}
+		});	
+	}
+	response.json({
+		time: new Date().toJSON(),
+		comments: comments.map((m) => ({
+			id: m.id,
+			html: getCommentHTML(m)
+		}))
+	});
+});
+
 app.get("/edit", async (request, response) => {
 	try {
 		const comment = await client.comment.findUnique({

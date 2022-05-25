@@ -1,5 +1,4 @@
-<% for (const book of books) { %>
-<div class="comment_item">
+<div class="comment_item" id=<%= book.id %>>
 	<a name=<%= book.id %>>
 		<form action="/edit">
 			<div style="padding-bottom: 5px; display: table; width: 100%;">
@@ -30,4 +29,3 @@
 		</form>
 	</a>
 </div>
-<% } %>

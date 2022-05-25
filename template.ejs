@@ -19,7 +19,6 @@
 			<a href=#latest>一番下へ行く</a>
 		</div>
 		<div id="comments" class="comments">
-			<%- comments %>
 		</div>
 		<div class="comments_last">
 			<a name=latest></a>
@@ -32,8 +31,6 @@
 			</form>
 		</div>
 		<script>
-			let startId = <%= startid %> ;
-			let endId = <%= endid %> ;
 			<% if (focus !== undefined) { %>
 				document.body.onload = () => {
 					document.getElementById("content").focus();
