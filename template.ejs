@@ -24,11 +24,12 @@
 			<a name=latest></a>
 		</div>
 		<div class="footer">
-			<form method="post" action="/send">
-				<input placeholder="名前" name="name" <% if(name !== undefined){ %> value="<%= name %>" <% } %> />
+			<div class="footer1" id="send_status">新しいコメントを送信</div>
+			<div>
+				<input placeholder="名前" name="name" id="send_name" <% if(name !== undefined){ %> value="<%= name %>" <% } %> />
 				<input placeholder="コメント" name="content" id="content" />
-				<button>送信</button>
-			</form>
+				<button id="send_button">送信</button>
+			</div>
 		</div>
 		<script>
 			<% if (focus !== undefined) { %>

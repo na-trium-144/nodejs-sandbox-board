@@ -73,61 +73,36 @@ async function txCheck(content){
 	}
     return content;
 }
-app.post("/send", async (request, response) => {
-	var content = request.body.content;
-    content = await txCheck(content);
-	const message = {
-		name: request.body.name,
+
+async function commentAdd(name, content){
+	let message = {
+		name: name,
 		content: content,
 		edited: false,
 		time: new Date()
 		// id:parseInt(request.body.id, 10)
-	};
-	// if(request.body.id === undefined){
+	}
+	await client.comment.create({data: message});
 	// if(comments.length === 0){
 	//     message.id = 0
 	// }else{
 	//     message.id = comments[comments.length - 1].id + 1;
 	// }
 	// comments.push(message);
-	await client.comment.create({
-		data: message
-	});
-	if (message.content === "ポケモンガチャ") {
-		message = {
-			name: "Bot",
-			content: pokemonGachaContent[Math.floor(Math.random() * pokemonGachaContent.length)],
-			edited: false,
-			time: new Date()
-			// id:parseInt(request.body.id, 10)
-		};
-		await client.comment.create({
-			data: message
-		});
-
-	}
 	//fs.writeFileSync(commentsFile, JSON.stringify(comments), "utf-8");
-	//response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), {
-	//    text: "コメントを送信しました。"
-	//}));
-	redirectMain(response, "latest", request.body.name, true);
-	// }
-});
-app.post("/send_edit", async (request, response) => {
-	// else{
-	try {
-		var content = request.body.content;
-		content = await txCheck(content);
+	return "";
+}
+async function commentEdit(id, name, content){
+	const message = {
+		name: name,
+		content: content,
+		edited: true,
+		time: new Date()
+	}
+	try{
 		await client.comment.update({
-			data: {
-				name: request.body.name,
-				content: content,
-				edited: true,
-				time: new Date()
-			},
-			where: {
-				id: parseInt(request.body.id, 10)
-			}
+			data: message,
+			where: {id: id}
 		});
 		// message.edited = true;
 		// const editTargetIndex = comments.findIndex((m) => (m.id === parseInt(request.body.id, 10)));
@@ -136,17 +111,48 @@ app.post("/send_edit", async (request, response) => {
 		// }else{
 		//     comments[editTargetIndex] = message;
 		// }
+		//fs.writeFileSync(commentsFile, JSON.stringify(comments), "utf-8");
+		return "";
+	}catch{
+		return "コメントの編集時にエラーが発生しました。"
+	}
+}
+
+app.post("/send", async (request, response) => {
+	let status = "";
+	var content = request.body.content;
+    content = await txCheck(content);
+	/*const message = {
+		name: request.body.name,
+		content: content,
+		edited: false,
+		time: new Date()
+	};*/
+	if(request.body.id === undefined || request.body.id === "undefined"){
+		status = await commentAdd(request.body.name, content);
+
+		if (content === "ポケモンガチャ") {
+			status = await commentAdd("Bot", pokemonGachaContent[Math.floor(Math.random() * pokemonGachaContent.length)]);
+		}
+		//redirectMain(response, "latest", request.body.name, true);
+//app.post("/send_edit", async (request, response) => {
+	}else{
+		//try {
+		var content = request.body.content;
+		content = await txCheck(content);
+		status = await commentEdit(parseInt(request.body.id, 10), request.body.name, content);
+		
 		//response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), {
 		//    text: "コメントを編集しました。"
 		//}));
-		redirectMain(response, parseInt(request.body.id, 10), "", false);
+		//redirectMain(response, parseInt(request.body.id, 10), "", false);
+		// } catch {
+			// response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), {
+				// text: "コメントの編集時にエラーが発生しました。"
+			// }));
 		// }
-		// fs.writeFileSync("comments.json", JSON.stringify(comments), "utf-8");
-	} catch {
-		response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), {
-			text: "コメントの編集時にエラーが発生しました。"
-		}));
 	}
+	response.send(status);
 });
 
 function getCommentHTML(comment) {
@@ -196,7 +202,7 @@ app.get("/", async (request, response) => {
 //startidより前の20件を返す
 app.get("/comments", async (request, response) => {
 	let comments;
-	if(request.query.startid !== undefined){
+	if(request.query.startid !== undefined && request.query.startid !== "undefined"){
 		comments = await client.comment.findMany({
 			orderBy: {id: "asc"},
 			where: {id: {lt: parseInt(request.query.startid, 10)}}
@@ -207,7 +213,7 @@ app.get("/comments", async (request, response) => {
 		});
 	}
 	let count = 20;
-	if(request.query.all !== undefined){
+	if(request.query.all !== undefined && request.query.all !== "false"){
 		count = comments.length;
 	}
 	response.json({
@@ -221,18 +227,18 @@ app.get("/comments", async (request, response) => {
 //startid以降でtime以降に変更されたものを返す
 app.get("/diff", async (request, response) => {
 	let comments;
-	if(request.query.startid !== undefined){
-		comments = await client.comment.findMany({
-			orderBy: {id: "asc"},
-			where: {time: {gte: new Date(request.query.time)}}
-		});	
-	}else{
+	if(request.query.startid !== undefined && request.query.startid !== "undefined"){
 		comments = await client.comment.findMany({
 			orderBy: {id: "asc"},
 			where: {
 				id: {gte: parseInt(request.query.startid, 10)},
 				time: {gte: new Date(request.query.time)}
 			}
+		});	
+	}else{
+		comments = await client.comment.findMany({
+			orderBy: {id: "asc"},
+			where: {time: {gte: new Date(request.query.time)}}
 		});	
 	}
 	response.json({
