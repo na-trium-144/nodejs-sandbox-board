@@ -220,7 +220,11 @@ app.get("/comments", async (request, response) => {
 		time: new Date().toJSON(),
 		comments: comments.slice(-count).map((m) => ({
 			id: m.id,
-			html: getCommentHTML(m)
+			name: m.name,
+			content: m.content,
+			edited: m.edited,
+			timestr: format(addHours(new Date(m.time), 9), "y/M/d(eee) H:mm:ss")
+			//html: getCommentHTML(m)
 		}))
 	});
 });
@@ -245,7 +249,11 @@ app.get("/diff", async (request, response) => {
 		time: new Date().toJSON(),
 		comments: comments.map((m) => ({
 			id: m.id,
-			html: getCommentHTML(m)
+			name: m.name,
+			content: m.content,
+			edited: m.edited,
+			timestr: format(addHours(new Date(m.time), 9), "y/M/d(eee) H:mm:ss")
+			//html: getCommentHTML(m)
 		}))
 	});
 });
@@ -276,6 +284,9 @@ app.get("/edit", async (request, response) => {
 
 app.get("/template.js", (request, response)=>{
 	response.send(fs.readFileSync("template.js", "utf-8"));
+});
+app.get("/comment.js", (request, response)=>{
+	response.send(fs.readFileSync("comment.js", "utf-8"));
 });
 app.get("/template.css", (request, response)=>{
 	response.header("Content-Type", "text/css")

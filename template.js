@@ -1,13 +1,17 @@
 let startId = undefined;
 let lastId = undefined;
 let lastFetchTime = new Date();
+let comments = [];
+
 async function getPrevComments(all){
 	const response = await fetch("/comments?" + new URLSearchParams({startid: startId, all: all}));
 	const resData = JSON.parse(await response.text());
 	const place = document.getElementById("comments");
 	if(resData.comments.length > 0){
 		for(let comment of resData.comments.slice().reverse()){
-			place.innerHTML = comment.html + place.innerHTML;
+			comments.unshift(comment);
+			place.innerHTML = commentToHTML(comment) + place.innerHTML;
+			//place.innerHTML = comment.html + place.innerHTML;
 		}
 		startId = resData.comments[0].id;
 		lastId = resData.comments[resData.comments.length - 1].id;
@@ -24,13 +28,23 @@ setInterval(async () => {
 		for(let comment of resData.comments){
 			if(comment.id > lastId){
 				const place = document.getElementById("comments");
-				place.innerHTML += comment.html;
+				comments.push(comment)
+				place.innerHTML += commentToHTML(comment);
+				//place.innerHTML += comment.html;
 			}else{
 				const place = document.getElementById(comment.id.toString());
-				place.innerHTML = comment.html.substr(comment.html.indexOf(">") + 1, comment.html.lastIndexOf("</div>"));
+				comments.map((m) => {
+					if(m.id === comment.id){
+						return comment;
+					}else{
+						return m;
+					}
+				});
+				place.outerHTML = commentToHTML(comment);
+				//place.outerHTML = comment.html;
 			}
 		}
-		startId = resData.comments[0].id;
+		//startId = resData.comments[0].id;
 	}
 	lastFetchTime = resData.time;
 }, 1000);
@@ -61,3 +75,20 @@ document.getElementById("send_button").onclick = async () => {
 	}
 	setSendStatus(status);
 };
+function edit(id){
+	const comment = comments.find((m) => (m.id === id));
+	const nameInput = document.getElementById("send_name");
+	const contentInput = document.getElementById("content");
+	nameInput.value = comment.name;
+	contentInput.value = comment.content;
+	editId = id;
+	setSendStatus("コメントを編集 <button onclick='editCancel()'>キャンセル</button>");
+}
+function editCancel(){
+	setSendStatus("");
+	editId = undefined;
+	const nameInput = document.getElementById("send_name");
+	const contentInput = document.getElementById("content");
+	nameInput.value = "";
+	contentInput.value = "";
+}

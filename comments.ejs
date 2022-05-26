@@ -1,11 +1,10 @@
 <div class="comment_item" id=<%= book.id %>>
 	<a name=<%= book.id %>>
-		<form action="/edit">
 			<div class="comment_item_header">
 				<table width="100%">
 				<tr>
 				<td>
-					<b>
+					<b class="comment_item_author">
 						<% if(book.name === ""){ %>
 						名無し
 						<% }else{ %>
@@ -21,8 +20,7 @@
 					</i>
 				</td>
 				<td align="right">
-					<input type="hidden" name="id" value="<%= book.id %>">
-					<button>編集</button>
+					<button onclick="edit(<%= book.id %>)">編集</button>
 				</td>
 				</tr>
 				</table>
@@ -30,6 +28,5 @@
 			<div class="comment_item_body">
 				<%= book.content %>
 			</div>
-		</form>
 	</a>
 </div>
