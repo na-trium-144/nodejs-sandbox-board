@@ -1,8 +1,10 @@
 <div class="comment_item" id=<%= book.id %>>
 	<a name=<%= book.id %>>
 		<form action="/edit">
-			<div style="padding-bottom: 5px; display: table; width: 100%;">
-				<span style="display:table-cell; text-align:left;">
+			<div class="comment_item_header">
+				<table width="100%">
+				<tr>
+				<td>
 					<b>
 						<% if(book.name === ""){ %>
 						名無し
@@ -10,20 +12,22 @@
 						<%= book.name %>
 						<% } %>
 					</b>
-					<i style="padding-left: 10px; color:gray;">(
+					<i class="comment_item_date">(
 						<% if(book.edited){ %>
 						編集済み:
 						<% } %>
 						<%= book.time %>
 						)
 					</i>
-				</span>
-				<span style="display: table-cell;text-align: right;">
+				</td>
+				<td align="right">
 					<input type="hidden" name="id" value="<%= book.id %>">
 					<button>編集</button>
-				</span>
+				</td>
+				</tr>
+				</table>
 			</div>
-			<div style="padding-left: 5px; padding-right: 5px;">
+			<div class="comment_item_body">
 				<%= book.content %>
 			</div>
 		</form>
