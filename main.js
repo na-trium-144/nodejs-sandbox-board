@@ -32,7 +32,29 @@ function redirectMain(response, anchor, name, focus) {
 	}
 }
 
+async function commentDelete(id){
+	try{
+		await client.comment.delete({
+			where: {
+				id: id
+			}
+		});
+		// comments = comments.filter((m) => (m.id !== parseInt(request.body.id, 10)));
+		//fs.writeFileSync(commentsFile, JSON.stringify(comments), "utf-8");
+		return "";
+	}catch{
+		return "コメントの削除時にエラーが発生しました。"
+	}
+}
 app.post("/delete", async (request, response) => {
+	let status;
+	if(request.body.id === undefined || request.body.id === "undefined"){
+		status = "Error: id not set"
+	}else{
+		status = await commentDelete(parseInt(request.body.id, 10));
+	}
+	response.send(status);
+	/*
 	try {
 		await client.comment.delete({
 			where: {
@@ -50,6 +72,7 @@ app.post("/delete", async (request, response) => {
 			text: "コメントの削除時にエラーが発生しました。"
 		}));
 	}
+	*/
 });
 
 const pokemonGachaContent = fs.readFileSync("pokemon.txt", "utf-8").split("\n")

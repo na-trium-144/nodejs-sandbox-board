@@ -74,7 +74,23 @@ document.getElementById("send_button").onclick = async () => {
 		contentInput.value = ""
 	}
 	setSendStatus(status);
+	editId = undefined;
 };
+async function editDelete(){
+	const nameInput = document.getElementById("send_name");
+	const contentInput = document.getElementById("content");
+	const response = await fetch("/delete", {
+		method: "post",
+		body: new URLSearchParams({
+			id: editId
+		})
+	});
+	const status = await response.text();
+	nameInput.value = ""
+	contentInput.value = ""
+	setSendStatus(status);
+	editId = undefined;
+}
 function edit(id){
 	const comment = comments.find((m) => (m.id === id));
 	const nameInput = document.getElementById("send_name");
@@ -82,7 +98,7 @@ function edit(id){
 	nameInput.value = comment.name;
 	contentInput.value = comment.content;
 	editId = id;
-	setSendStatus("コメントを編集 <button onclick='editCancel()'>キャンセル</button>");
+	setSendStatus("コメントを編集 <button onclick='editCancel()'>キャンセル</button> <button onclick='editDelete()'>コメントを削除</button>");
 }
 function editCancel(){
 	setSendStatus("");
