@@ -2,44 +2,44 @@
 <html lang="ja">
 
 <head>
-	<meta charset="UTF-8" />
-	<title>SandBoxBoard</title>
-	<link rel="stylesheet" href="template.css" />
+  <meta charset="UTF-8" />
+  <title>SandBoxBoard</title>
+  <link rel="stylesheet" href="template.css" />
 </head>
 
 <body>
-	<div style="font-family:sans-serif">
-		<div class="header">
-			<h1 class="header1">SandBoxBoard</h1>
-			<div class="header2">誰でも自由に編集や削除ができる匿名掲示板です。</div>
-		</div>
-		<div class="comments_begin">
-			<button id=load_before>前の20件を表示</button>
-			<button id=load_before_all>すべてのコメントを表示</button>
-			<a href=#latest>一番下へ行く</a>
-		</div>
-		<div id="comments" class="comments">
-		</div>
-		<div class="comments_last">
-			<a name=latest></a>
-		</div>
-		<div class="footer">
-			<div class="footer1" id="send_status">新しいコメントを送信</div>
-			<div>
-				<input placeholder="名前" name="name" id="send_name" <% if(name !== undefined){ %> value="<%= name %>" <% } %> />
-				<input placeholder="コメント" name="content" id="content" />
-				<button id="send_button">送信</button>
-			</div>
-		</div>
-		<script>
-			<% if (focus !== undefined) { %>
-				document.body.onload = () => {
-					document.getElementById("content").focus();
-				};
-			<% } %>
-		</script>
-		<script src="comment.js"></script>
-		<script src="template.js"></script>
+  <div style="font-family:sans-serif">
+    <div class="header">
+      <h1 class="header1">SandBoxBoard</h1>
+      <div class="header2">誰でも自由に編集や削除ができる匿名掲示板です。</div>
+    </div>
+    <div class="comments_begin">
+      <button id=load_before>前の20件を表示</button>
+      <button id=load_before_all>すべてのコメントを表示</button>
+      <a href=#latest>一番下へ行く</a>
+    </div>
+    <div id="comments" class="comments">
+    </div>
+    <div class="comments_last">
+      <a name=latest></a>
+    </div>
+    <div class="footer">
+      <div class="footer1" id="send_status">新しいコメントを送信</div>
+      <div>
+        <input placeholder="名前" name="name" id="send_name" <% if(name !== undefined){ %> value="<%= name %>" <% } %> />
+        <input placeholder="コメント" name="content" id="content" />
+        <button id="send_button">送信</button>
+      </div>
+    </div>
+    <script>
+      <% if (focus !== undefined) { %>
+        document.body.onload = () => {
+          document.getElementById("content").focus();
+        };
+      <% } %>
+    </script>
+    <script src="comment.js"></script>
+    <script src="template.js"></script>
 </body>
 
 </html>
