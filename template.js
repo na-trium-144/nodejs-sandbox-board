@@ -31,6 +31,7 @@ setInterval(async () => {
         comments.push(comment)
         place.innerHTML += commentToHTML(comment);
         //place.innerHTML += comment.html;
+        lastId = comment.id;
       }else{
         const place = document.getElementById(comment.id.toString());
         comments.map((m) => {
@@ -77,19 +78,21 @@ document.getElementById("send_button").onclick = async () => {
   editId = undefined;
 };
 async function editDelete(){
-  const nameInput = document.getElementById("send_name");
-  const contentInput = document.getElementById("content");
-  const response = await fetch("/delete", {
-    method: "post",
-    body: new URLSearchParams({
-      id: editId
-    })
-  });
-  const status = await response.text();
-  nameInput.value = ""
-  contentInput.value = ""
-  setSendStatus(status);
-  editId = undefined;
+  if(window.confirm("コメントを削除しますか?")){
+    const nameInput = document.getElementById("send_name");
+    const contentInput = document.getElementById("content");
+    const response = await fetch("/delete", {
+      method: "post",
+      body: new URLSearchParams({
+        id: editId
+      })
+    });
+    const status = await response.text();
+    nameInput.value = ""
+    contentInput.value = ""
+    setSendStatus(status);
+    editId = undefined;
+  }
 }
 function edit(id){
   const comment = comments.find((m) => (m.id === id));

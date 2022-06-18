@@ -34,11 +34,22 @@ function redirectMain(response, anchor, name, focus) {
 
 async function commentDelete(id){
   try{
-    await client.comment.delete({
+    /*await client.comment.delete({
       where: {
         id: id
       }
+    });*/
+    const message = {
+      name: "",
+      content: "",
+      deleted: true,
+      time: new Date()
+    }
+    await client.comment.update({
+      data: message,
+      where: {id: id}
     });
+
     // comments = comments.filter((m) => (m.id !== parseInt(request.body.id, 10)));
     //fs.writeFileSync(commentsFile, JSON.stringify(comments), "utf-8");
     return "";
@@ -92,7 +103,7 @@ async function txCheck(content){
             content = "[有害度検知: " + txResult.join(",") + "]"
         }
   }catch{
-        
+
   }
     return content;
 }
@@ -102,6 +113,7 @@ async function commentAdd(name, content){
     name: name,
     content: content,
     edited: false,
+    deleted: false,
     time: new Date()
     // id:parseInt(request.body.id, 10)
   }
@@ -164,7 +176,7 @@ app.post("/send", async (request, response) => {
     var content = request.body.content;
     content = await txCheck(content);
     status = await commentEdit(parseInt(request.body.id, 10), request.body.name, content);
-    
+
     //response.send(ejs.render(fs.readFileSync("message.ejs", "utf-8"), {
     //    text: "コメントを編集しました。"
     //}));
@@ -246,6 +258,7 @@ app.get("/comments", async (request, response) => {
       name: m.name,
       content: m.content,
       edited: m.edited,
+      deleted: m.deleted,
       timestr: format(addHours(new Date(m.time), 9), "y/M/d(eee) H:mm:ss")
       //html: getCommentHTML(m)
     }))
@@ -261,12 +274,12 @@ app.get("/diff", async (request, response) => {
         id: {gte: parseInt(request.query.startid, 10)},
         time: {gte: new Date(request.query.time)}
       }
-    });  
+    });
   }else{
     comments = await client.comment.findMany({
       orderBy: {id: "asc"},
       where: {time: {gte: new Date(request.query.time)}}
-    });  
+    });
   }
   response.json({
     time: new Date().toJSON(),
@@ -275,6 +288,7 @@ app.get("/diff", async (request, response) => {
       name: m.name,
       content: m.content,
       edited: m.edited,
+      deleted: m.deleted,
       timestr: format(addHours(new Date(m.time), 9), "y/M/d(eee) H:mm:ss")
       //html: getCommentHTML(m)
     }))

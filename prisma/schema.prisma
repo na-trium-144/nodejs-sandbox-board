@@ -12,8 +12,9 @@ datasource db {
 
 model Comment {
   id   Int    @id @default(autoincrement())
-  name String
-  content String
+  name String @default("")
+  content String @default("")
   time DateTime
-  edited Boolean
+  edited Boolean @default(false)
+  deleted Boolean @default(false)
 }
