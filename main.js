@@ -3,7 +3,7 @@ const fs = require("fs");
 const ejs = require("ejs");
 const {
   format,
-  addHours
+  addMinutes
 } = require("date-fns");
 
 const app = express();
@@ -198,7 +198,7 @@ function getCommentHTML(comment) {
       content: comment.content,
       edited: comment.edited,
       id: comment.id,
-      time: format(addHours(new Date(comment.time), 9), "y/M/d(eee) H:mm:ss")
+      time: format(addMinutes(new Date(comment.time), new Date().getTimezoneOffset() + 9 * 60), "y/M/d(eee) H:mm:ss")
     }
   });
   return html;
@@ -259,7 +259,7 @@ app.get("/comments", async (request, response) => {
       content: m.content,
       edited: m.edited,
       deleted: m.deleted,
-      timestr: format(addHours(new Date(m.time), 9), "y/M/d(eee) H:mm:ss")
+      timestr: format(addMinutes(new Date(m.time), new Date().getTimezoneOffset() + 9 * 60), "y/M/d(eee) H:mm:ss")
       //html: getCommentHTML(m)
     }))
   });
@@ -289,7 +289,7 @@ app.get("/diff", async (request, response) => {
       content: m.content,
       edited: m.edited,
       deleted: m.deleted,
-      timestr: format(addHours(new Date(m.time), 9), "y/M/d(eee) H:mm:ss")
+      timestr: format(addMinutes(new Date(m.time), new Date().getTimezoneOffset() + 9 * 60), "y/M/d(eee) H:mm:ss")
       //html: getCommentHTML(m)
     }))
   });
