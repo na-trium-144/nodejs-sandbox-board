@@ -3,12 +3,7 @@ function replaceTag(str){
 }
 function commentToHTML(comment){
   if(comment.deleted){
-    return '\
-  <div class="comment_item" id=<%= id %>>\
-    <a name=<%= id %>>\
-    </a>\
-  </div>\
-    '.replaceAll("<%= id %>", comment.id.toString())
+    return '<a name=<%= id %> id=<%= id %>></a>'.replaceAll("<%= id %>", comment.id.toString())
   }else{
     return '\
   <div class="comment_item" id=<%= id %>>\
