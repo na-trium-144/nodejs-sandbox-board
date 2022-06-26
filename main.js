@@ -85,9 +85,6 @@ app.post("/delete", async (request, response) => {
   }
   */
 });
-
-const pokemonGachaContent = fs.readFileSync("pokemon.txt", "utf-8").split("\n")
-
 async function txCheck(content){
     var txResult = [];
   try{
@@ -153,6 +150,7 @@ async function commentEdit(id, name, content){
   }
 }
 
+
 app.post("/send", async (request, response) => {
   let status = "";
   var content = request.body.content;
@@ -166,9 +164,13 @@ app.post("/send", async (request, response) => {
   if(request.body.id === undefined || request.body.id === "undefined"){
     status = await commentAdd(request.body.name, content);
 
-    if (content === "ポケモンガチャ") {
-      status = await commentAdd("Bot", pokemonGachaContent[Math.floor(Math.random() * pokemonGachaContent.length)]);
-    }
+    try{
+  	    const gachaContent = fs.readFileSync("data/gacha/"+message.content+".txt", "utf-8").split("\n");
+        let gachaMessage = gachaContent[Math.floor(Math.random() * gachaContent.length)];
+        await commentAdd("Bot", gachaMessage);
+  	}catch{
+
+  	}
     //redirectMain(response, "latest", request.body.name, true);
 //app.post("/send_edit", async (request, response) => {
   }else{
@@ -188,6 +190,7 @@ app.post("/send", async (request, response) => {
     // }
   }
   response.send(status);
+
 });
 
 function getCommentHTML(comment) {
