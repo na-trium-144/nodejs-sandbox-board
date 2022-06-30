@@ -3,41 +3,34 @@ import logo from './logo.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  // const [count, setCount] = useState(0)
 
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.jsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
+        <h1 className="App-header1">SandBoxBoard</h1>
+        <div className="App-header2">誰でも自由に編集や削除ができる匿名掲示板です。</div>
       </header>
+      <main className="App-Main">
+        <div className="comments_begin">
+          <button id="load_before">前の20件を表示</button>
+          <button id="load_before_all">すべてのコメントを表示</button>
+          <a href="#latest">一番下へ行く</a>
+        </div>
+        <div id="comments" className="comments">
+        </div>
+        <div className="comments_last">
+          <a name="latest"></a>
+        </div>
+      </main>
+      <footer className="App-footer">
+        <div className="footer1" id="send_status">新しいコメントを送信</div>
+        <div>
+          <input placeholder="名前" name="name" id="send_name" /*<% if(name !== undefined){ %> value="<%= name %>" <% } %>*/ />
+          <input placeholder="コメント" name="content" id="content" />
+          <button id="send_button">送信</button>
+        </div>
+      </footer>
     </div>
   )
 }
