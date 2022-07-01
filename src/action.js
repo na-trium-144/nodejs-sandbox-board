@@ -1,4 +1,4 @@
-export async function send(id, name, content) {
+export async function send(id, name, content, setStatus, setLastFetchTime, onFinished) {
   const response = await fetch("/send", {
     method: "post",
     body: new URLSearchParams({
@@ -7,19 +7,27 @@ export async function send(id, name, content) {
       id: id
     })
   });
-  const status = await response.text();
-  return status;
+  const resData = JSON.parse(await response.text());
+  setStatus(resData.status);
+  if (resData.time !== undefined) {
+    setLastFetchTime((oldTime) => (new Date(oldTime) < new Date(resData.time) ? oldTime : resData.time));
+  }
+  onFinished();
 }
-export async function del(id) {
+export async function del(id, setStatus, setLastFetchTime, onFinished) {
   if (window.confirm("コメントを削除しますか?")) {
     const response = await fetch("/delete", {
       method: "post",
       body: new URLSearchParams({
-        id: id
+        id: id,
       })
     });
-    const status = await response.text();
-    return status;
+    const resData = JSON.parse(await response.text());
+    setStatus(resData.status);
+    if (resData.time !== undefined) {
+      setLastFetchTime((oldTime) => (new Date(oldTime) < new Date(resData.time) ? oldTime : resData.time));
+    }
+    onFinished();
   }
 }
 
@@ -45,10 +53,12 @@ export async function getCommentsDiff(setComments, setLastFetchTime, id, lastFet
   if (resData !== undefined) {
     setComments((comments) => {
       for (const newCom of resData.comments) {
-        if (newCom.id > oldCom[oldCom.length - 1].id) {
+        if (newCom.deleted) {
+          comments = comments.filter((oldCom) => (oldCom.id !== newCom.id));
+        } else if (newCom.id > comments[comments.length - 1].id) {
           comments.push(newCom);
         } else {
-          comments.map((oldCom) => (
+          comments = comments.map((oldCom) => (
             oldCom.id === newCom.id ? newCom : oldCom
           ));
         }

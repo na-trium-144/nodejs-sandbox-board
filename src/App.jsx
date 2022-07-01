@@ -17,8 +17,8 @@ function Comment(props){
               {c.name}
             </b>
             <i class="comment_item_date">(
-              {c.edited && "(編集済み)"}
-              {c.time}
+              {c.edited && <span>編集済み: </span>}
+              <span>{c.timestr}</span>
               )
             </i>
           </td>
@@ -49,7 +49,7 @@ function EditStatus(props){
             <>
               <span>コメントを編集</span>
               <button onClick={props.onCancel}>キャンセル</button>
-              <button onclick={props.onDelete}>コメントを削除</button>
+              <button onClick={props.onDelete}>コメントを削除</button>
             </>
         )
       }
@@ -79,7 +79,7 @@ function App() {
   const [footerStatus, setFooterStatus] = useState("")
   const [sendName, setSendName] = useState("")
   const [sendContent, setSendContent] = useState("")
-  const [lastFetchTime, setLastFetchTime] = useState(new Date());
+  const [lastFetchTime, setLastFetchTime] = useState(new Date().toJSON());
 
   useEffect(() => {
     action.getPrevComments(setComments, setLastFetchTime);
@@ -123,6 +123,8 @@ function App() {
               onEdit={() => {
                 setEditId(c.id);
                 setFooterStatus("");
+                setSendName(c.name);
+                setSendContent(c.content);
               }}
             />
           ))}
@@ -137,11 +139,15 @@ function App() {
           editId={editId}
           onCancel={() => {
             setEditId(-1);
+            setSendName("");
+            setSendContent("");
           }}
           onDelete={async () => {
-            const status = await action.del(editId);
-            setFooterStatus(status);
-            setEditId(-1);
+            await action.del(editId, setFooterStatus, setLastFetchTime, () => {
+              setEditId(-1);
+              setSendName("");
+              setSendContent("");
+            });
           }}
         />
         <EditForm
@@ -150,9 +156,10 @@ function App() {
           content={sendContent}
           setContent={setSendContent}
           onSend={async () => {
-            const status = await action.send(editId, sendName, sendContent);
-            setFooterStatus(status);
-            setEditId(-1);
+            await action.send(editId, sendName, sendContent, setFooterStatus, setLastFetchTime, () => {
+              setEditId(-1);
+              setSendContent("");
+            });
           }}
         />
       </footer>
