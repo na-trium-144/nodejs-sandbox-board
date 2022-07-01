@@ -116,7 +116,7 @@ app.post("/send", async (request, response) => {
     [status, time] = await commentAdd(request.body.name, content);
 
     try {
-      const gachaContent = fs.readFileSync("data/gacha/" + message.content + ".txt", "utf-8").split("\n");
+      const gachaContent = fs.readFileSync(`${__dirname}/../data/gacha/${content}.txt`, "utf-8").split("\n");
       let gachaMessage = gachaContent[Math.floor(Math.random() * gachaContent.length)];
       await commentAdd("Bot", gachaMessage);
     } catch {
