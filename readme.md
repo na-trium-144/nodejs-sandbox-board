@@ -7,7 +7,9 @@
 * 環境変数`DATABASE_URL`か.envファイルにPostgreSQLのサーバー(postgres://user:password@domain/name)を設定して
 ```
 npm install
-node ./main.js
+npx prisma db push
+npm run build
+npm start
 ```
 * 環境変数PORTに設定されているポートか、未設定なら3000でアクセスできる
 
