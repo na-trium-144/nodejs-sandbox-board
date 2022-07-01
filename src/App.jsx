@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 // import logo from './logo.svg'
 import './App.css'
 import * as action from './action.js'
@@ -79,6 +79,18 @@ function App() {
   const [footerStatus, setFooterStatus] = useState("")
   const [sendName, setSendName] = useState("")
   const [sendContent, setSendContent] = useState("")
+  const [lastFetchTime, setLastFetchTime] = useState(new Date());
+
+  useEffect(() => {
+    action.getPrevComments(setComments, setLastFetchTime);
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      action.getCommentsDiff(setComments, setLastFetchTime, comments[0].id, lastFetchTime);
+    }, 1000);
+    return () => {clearInterval(interval);};
+  }, [comments, lastFetchTime])
 
   return (
     <div className="App">
@@ -88,8 +100,20 @@ function App() {
       </header>
       <main className="App-main">
         <div className="comments_begin">
-          <button id="load_before">前の20件を表示</button>
-          <button id="load_before_all">すべてのコメントを表示</button>
+          <button
+            onClick={() => {
+              action.getPrevComments(setComments, setLastFetchTime, comments[0].id);
+            }}
+          >
+            前の20件を表示
+          </button>
+          <button
+            onClick={() => {
+              action.getPrevComments(setComments, setLastFetchTime, comments[0].id, true);
+            }}
+          >
+            すべてのコメントを表示
+          </button>
           <a href="#latest">一番下へ行く</a>
         </div>
         <div className="comments">
