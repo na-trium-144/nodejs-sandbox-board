@@ -7,7 +7,7 @@ const {
 } = require("date-fns");
 
 const app = express();
-// app.use(express.static("static"));
+app.use(express.static("dist"));
 app.use(express.urlencoded({
   extended: true
 }));
@@ -24,19 +24,9 @@ toxicity.load(0.9).then((model) => {
   txModel = model;
 });
 
-function redirectMain(response, anchor, name, focus) {
-  if (focus) {
-    response.status(303).set("Location", "/?focus=1&name=" + encodeURIComponent(name) + "#" + anchor).end();
-  } else {
-    response.status(303).set("Location", "/#" + anchor).end();
-  }
-}
-
 async function commentDelete(id) {
   try {
     const message = {
-      name: "",
-      content: "",
       deleted: true,
       time: new Date()
     }
@@ -46,19 +36,20 @@ async function commentDelete(id) {
         id: id
       }
     });
-    return "";
+    return ["", message.time];
   } catch {
-    return "コメントの削除時にエラーが発生しました。"
+    return ["コメントの削除時にエラーが発生しました。", undefined]
   }
 }
 app.post("/delete", async (request, response) => {
   let status;
+  let time = undefined;
   if (request.body.id === undefined || request.body.id === "undefined") {
     status = "Error: id not set"
   } else {
-    status = await commentDelete(parseInt(request.body.id, 10));
+    [status, time] = await commentDelete(parseInt(request.body.id, 10));
   }
-  response.send(status);
+  response.json({status: status, time:time});
 });
 async function txCheck(content) {
   var txResult = [];
@@ -93,7 +84,7 @@ async function commentAdd(name, content) {
   await client.comment.create({
     data: message
   });
-  return "";
+  return ["", message.time];
 }
 async function commentEdit(id, name, content) {
   const message = {
@@ -109,19 +100,20 @@ async function commentEdit(id, name, content) {
         id: id
       }
     });
-    return "";
+    return ["", message.time];
   } catch {
-    return "コメントの編集時にエラーが発生しました。"
+    return ["コメントの編集時にエラーが発生しました。", undefined]
   }
 }
 
 
 app.post("/send", async (request, response) => {
   let status = "";
+  let time = undefined;
   var content = request.body.content;
   content = await txCheck(content);
-  if (request.body.id === undefined || request.body.id === "undefined") {
-    status = await commentAdd(request.body.name, content);
+  if (request.body.id === undefined || request.body.id === "undefined" || parseInt(request.body.id, 10) < 0) {
+    [status, time] = await commentAdd(request.body.name, content);
 
     try {
       const gachaContent = fs.readFileSync("data/gacha/" + message.content + ".txt", "utf-8").split("\n");
@@ -131,39 +123,15 @@ app.post("/send", async (request, response) => {
 
     }
   } else {
-    var content = request.body.content;
-    content = await txCheck(content);
-    status = await commentEdit(parseInt(request.body.id, 10), request.body.name, content);
+    [status, time] = await commentEdit(parseInt(request.body.id, 10), request.body.name, content);
   }
-  response.send(status);
+  response.json({status:status, time:time});
 
-});
-
-function getCommentHTML(comment) {
-  const template = fs.readFileSync("comments.ejs", "utf-8");
-  const html = ejs.render(template, {
-    book: {
-      name: comment.name,
-      content: comment.content,
-      edited: comment.edited,
-      id: comment.id,
-      time: format(addMinutes(new Date(comment.time), new Date().getTimezoneOffset() + 9 * 60), "y/M/d(eee) H:mm:ss")
-    }
-  });
-  return html;
-}
-
-app.get("/", async (request, response) => {
-  const template = fs.readFileSync("template.ejs", "utf-8");
-  const html = ejs.render(template, {
-    name: request.query.name,
-    focus: request.query.focus,
-  });
-  response.send(html);
 });
 
 //startidより前の20件を返す
 app.get("/comments", async (request, response) => {
+  const fetchTime = new Date();
   let comments;
   if (request.query.startid !== undefined && request.query.startid !== "undefined") {
     comments = await client.comment.findMany({
@@ -173,7 +141,8 @@ app.get("/comments", async (request, response) => {
       where: {
         id: {
           lt: parseInt(request.query.startid, 10)
-        }
+        },
+        deleted: false
       }
     });
   } else {
@@ -181,6 +150,9 @@ app.get("/comments", async (request, response) => {
       orderBy: {
         id: "asc"
       },
+      where: {
+        deleted: false
+      }
     });
   }
   let count = 20;
@@ -188,7 +160,7 @@ app.get("/comments", async (request, response) => {
     count = comments.length;
   }
   response.json({
-    time: new Date().toJSON(),
+    time: fetchTime.toJSON(),
     comments: comments.slice(-count).map((m) => ({
       id: m.id,
       name: m.name,
@@ -202,6 +174,7 @@ app.get("/comments", async (request, response) => {
 });
 //startid以降でtime以降に変更されたものを返す
 app.get("/diff", async (request, response) => {
+  const fetchTime = new Date();
   let comments;
   if (request.query.startid !== undefined && request.query.startid !== "undefined") {
     comments = await client.comment.findMany({
@@ -230,7 +203,7 @@ app.get("/diff", async (request, response) => {
     });
   }
   response.json({
-    time: new Date().toJSON(),
+    time: fetchTime.toJSON(),
     comments: comments.map((m) => ({
       id: m.id,
       name: m.name,
@@ -262,14 +235,4 @@ app.get("/edit", async (request, response) => {
   }
 });
 
-app.get("/template.js", (request, response) => {
-  response.send(fs.readFileSync("template.js", "utf-8"));
-});
-app.get("/comment.js", (request, response) => {
-  response.send(fs.readFileSync("comment.js", "utf-8"));
-});
-app.get("/template.css", (request, response) => {
-  response.header("Content-Type", "text/css")
-  response.send(fs.readFileSync("template.css", "utf-8"));
-});
 app.listen(process.env.PORT || 3000);
