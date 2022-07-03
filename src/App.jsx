@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 // import logo from './logo.svg'
 import './App.css'
 import * as action from './action.js'
+import EditForm from './EditForm.jsx'
 
 function Comment(props){
   const c = props.comment;
@@ -34,42 +35,6 @@ function Comment(props){
           {c.content}
         </div>
       </a>
-    </div>
-  )
-}
-
-function EditStatus(props){
-  return(
-    <div className="footer1">
-      {
-        props.status || (
-          props.editId == -1 ?
-            <span>新しいコメントを送信</span>
-          :
-            <>
-              <span>コメントを編集</span>
-              <button onClick={props.onCancel}>キャンセル</button>
-              <button onClick={props.onDelete}>コメントを削除</button>
-            </>
-        )
-      }
-    </div>
-  )
-}
-function EditForm(props){
-  return(
-    <div>
-      <input
-        placeholder="名前"
-        value={props.name}
-        onChange={(e) => {props.setName(e.target.value);}}
-      />
-      <input
-        placeholder="コメント"
-        value={props.content}
-        onChange={(e) => {props.setContent(e.target.value);}}
-      />
-      <button onClick={props.onSend}>送信</button>
     </div>
   )
 }
@@ -133,36 +98,32 @@ function App() {
           <a name="latest"></a>
         </div>
       </main>
-      <footer className="App-footer">
-        <EditStatus
-          status={footerStatus}
-          editId={editId}
-          onCancel={() => {
+      <EditForm
+        status={footerStatus}
+        editId={editId}
+        onCancel={() => {
+          setEditId(-1);
+          setSendName("");
+          setSendContent("");
+        }}
+        onDelete={async () => {
+          await action.del(editId, setFooterStatus, setLastFetchTime, () => {
             setEditId(-1);
             setSendName("");
             setSendContent("");
-          }}
-          onDelete={async () => {
-            await action.del(editId, setFooterStatus, setLastFetchTime, () => {
-              setEditId(-1);
-              setSendName("");
-              setSendContent("");
-            });
-          }}
-        />
-        <EditForm
-          name={sendName}
-          setName={setSendName}
-          content={sendContent}
-          setContent={setSendContent}
-          onSend={async () => {
-            await action.send(editId, sendName, sendContent, setFooterStatus, setLastFetchTime, () => {
-              setEditId(-1);
-              setSendContent("");
-            });
-          }}
-        />
-      </footer>
+          });
+        }}
+        name={sendName}
+        setName={setSendName}
+        content={sendContent}
+        setContent={setSendContent}
+        onSend={async () => {
+          await action.send(editId, sendName, sendContent, setFooterStatus, setLastFetchTime, () => {
+            setEditId(-1);
+            setSendContent("");
+          });
+        }}
+      />
     </div>
   )
 }
