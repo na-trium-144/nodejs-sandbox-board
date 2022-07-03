@@ -36,7 +36,7 @@ function Comment(props){
             component="div"
             sx={{color:'text.primary', fontWeight:'bold', wordBreak:'break-word'}}
           >
-            {c.name}
+            {c.name || "名無し"}
           </Typography>
           <Typography
             variant="body2"

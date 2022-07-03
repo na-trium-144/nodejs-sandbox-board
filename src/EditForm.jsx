@@ -9,8 +9,10 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
-
+import { useState, useEffect } from 'react'
 export default function EditForm(props){
+  const [ctrlKey, setCtrlKey] = useState(false);
+
   return(
     <>
     <Toolbar />
@@ -63,12 +65,25 @@ export default function EditForm(props){
         </Grid>
         <Grid item xs={12} sm md lg xl>
           <TextField
-            label="コメント"
+            label="コメント(Ctrl+Enterで送信)"
             variant="standard"
             multiline
             maxRows={4}
             value={props.content}
             onChange={(e) => {props.setContent(e.target.value);}}
+            onKeyDown={(e) => {
+              if(e.keyCode === 17){
+                setCtrlKey(true);
+              }
+              if(e.keyCode === 13 && ctrlKey){
+                props.onSend();
+              }
+            }}
+            onKeyUp={(e) => {
+              if(e.keyCode === 17){
+                setCtrlKey(false);
+              }
+            }}
             fullWidth
           />
         </Grid>
