@@ -18,7 +18,7 @@ export default function EditForm(props){
       {
         props.status || (
           props.editId == -1 ?
-            <Typography variant="caption" display="block" gutterBottom>
+            <Typography variant="caption" gutterBottom>
               新しいコメントを送信
             </Typography>
           :
@@ -38,6 +38,7 @@ export default function EditForm(props){
         )
       }
       </Box>
+      <Box>
       <Grid container spacing={2} alignItems="flex-end">
         <Grid item xs={12} sm={3} md={2} lg={2} xl={1}>
           <TextField
@@ -68,6 +69,7 @@ export default function EditForm(props){
           </Button>
         </Grid>
       </Grid>
+      </Box>
     </Stack>
     </AppBar>
     </>
