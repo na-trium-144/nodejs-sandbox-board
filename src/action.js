@@ -1,5 +1,5 @@
 let dummyComments = undefined;
-if(1){
+if(0){
   //テスト用のダミーテキスト
   //テストが終わったらif(0)に戻す
   dummyComments = [

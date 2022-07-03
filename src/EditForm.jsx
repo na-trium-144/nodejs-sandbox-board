@@ -7,6 +7,8 @@ import Stack from '@mui/material/Stack';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SendIcon from '@mui/icons-material/Send';
 
 export default function EditForm(props){
   return(
@@ -38,7 +40,7 @@ export default function EditForm(props){
               <Grid item>
                 <ButtonGroup variant="outlined" size="small">
                   <Button onClick={props.onCancel}>キャンセル</Button>
-                  <Button onClick={props.onDelete}>コメントを削除</Button>
+                  <Button onClick={props.onDelete} startIcon={<DeleteIcon />}>コメントを削除</Button>
                 </ButtonGroup>
               </Grid>
             </>
@@ -74,6 +76,7 @@ export default function EditForm(props){
           <Button
             variant="contained"
             onClick={props.onSend}
+            startIcon={<SendIcon />}
           >
             送信
           </Button>
