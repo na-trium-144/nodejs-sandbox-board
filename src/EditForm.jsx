@@ -12,17 +12,24 @@ export default function EditForm(props){
   return(
     <>
     <Toolbar />
-    <AppBar position="fixed" color="inherit" sx={{top: 'auto', bottom: 0, padding: 2}}>
+    <AppBar position="fixed" color="inherit" sx={{top: 'auto', bottom: 0}}>
     <Stack spacing={1}>
+      <Box />
       <Box>
+      <Grid container spacing={2} alignItems="center">
+      <Grid item />
       {
         props.status || (
           props.editId == -1 ?
-            <Typography variant="caption" gutterBottom>
-              新しいコメントを送信
-            </Typography>
+            <>
+              <Grid item sx>
+              <Typography variant="caption" gutterBottom>
+                新しいコメントを送信
+              </Typography>
+              </Grid>
+            </>
           :
-            <Grid container spacing={1} alignItems="center">
+            <>
               <Grid item>
                 <Typography variant="caption" gutterBottom>
                 コメントを編集
@@ -34,12 +41,15 @@ export default function EditForm(props){
                   <Button onClick={props.onDelete}>コメントを削除</Button>
                 </ButtonGroup>
               </Grid>
-            </Grid>
+            </>
         )
       }
+      <Grid item />
+      </Grid>
       </Box>
       <Box>
       <Grid container spacing={2} alignItems="flex-end">
+        <Grid item />
         <Grid item xs={12} sm={3} md={2} lg={2} xl={1}>
           <TextField
             label="名前"
@@ -68,8 +78,10 @@ export default function EditForm(props){
             送信
           </Button>
         </Grid>
+        <Grid item />
       </Grid>
       </Box>
+      <Box />
     </Stack>
     </AppBar>
     </>

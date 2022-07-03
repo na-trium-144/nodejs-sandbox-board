@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import * as action from './action.js'
 import EditForm from './EditForm.jsx'
+import Navigation from './Navigation.jsx'
 
 function Comment(props){
   const c = props.comment;
@@ -59,10 +60,7 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1 className="App-header1">SandBoxBoard</h1>
-        <div className="App-header2">誰でも自由に編集や削除ができる匿名掲示板です。</div>
-      </header>
+      <Navigation />
       <main className="App-main">
         <div className="comments_begin">
           <button
