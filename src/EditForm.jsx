@@ -12,7 +12,7 @@ export default function EditForm(props){
   return(
     <>
     <Toolbar />
-    <AppBar position="fixed" color="inherit" sx={{top: 'auto', bottom: 0}}>
+    <AppBar position="fixed" color="inherit" sx={{top: 'auto', bottom: 0, }}>
     <Stack spacing={1}>
       <Box />
       <Box>

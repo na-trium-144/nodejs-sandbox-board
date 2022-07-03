@@ -1,3 +1,13 @@
+let dummyComments = undefined;
+if(1){
+  //テスト用のダミーテキスト
+  //テストが終わったらif(0)に戻す
+  dummyComments = [
+    {name: "test", content:"これはダミーのテキストです", timestr:"0000/00/00", edited:true, id:0},
+    {name: "test", content:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", timestr:"0000/00/00", edited:true, id:0},
+    {name: "test", content:"これはダミーのテキストです", timestr:"0000/00/00", edited:true, id:0},
+  ];
+}
 export async function send(id, name, content, setStatus, setLastFetchTime, onFinished) {
   const response = await fetch("/send", {
     method: "post",
@@ -36,12 +46,18 @@ export async function getPrevComments(setComments, setLastFetchTime, id = undefi
     startid: id,
     all: all
   }));
-  const resData = JSON.parse(await response.text());
-  if (resData !== undefined) {
-    setComments((comments) => (resData.comments.concat(comments)));
+  try{
+    const resData = JSON.parse(await response.text());
+    if (resData !== undefined) {
+      setComments((comments) => (resData.comments.concat(comments)));
+    }
+    if (resData !== undefined) {
+      setLastFetchTime(resData.time);
+    }
+  }catch{
   }
-  if (resData !== undefined) {
-    setLastFetchTime(resData.time);
+  if(dummyComments){
+    setComments(dummyComments);
   }
 }
 export async function getCommentsDiff(setComments, setLastFetchTime, id, lastFetchTime) {

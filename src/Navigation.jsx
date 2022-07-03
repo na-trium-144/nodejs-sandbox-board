@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -33,7 +31,7 @@ function ChannelInfo(props) {
       >
         <Grid container spacing={1} alignItems="flex-end">
         <Grid item />
-        <Grid item sx="auto">
+        <Grid item>
         <Typography
           variant="h6"
           component="div"
@@ -43,7 +41,7 @@ function ChannelInfo(props) {
           {props.name}
         </Typography>
         </Grid>
-        <Grid item sx="auto">
+        <Grid item>
         <ArrowDropDownIcon />
         </Grid>
         </Grid>
