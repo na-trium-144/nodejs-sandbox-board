@@ -14,6 +14,7 @@ function App() {
   const [sendName, setSendName] = useState("")
   const [sendContent, setSendContent] = useState("")
   const [lastFetchTime, setLastFetchTime] = useState(new Date().toJSON());
+  const [editExpand, setEditExpand] = useState(false);
 
   useEffect(() => {
     action.getPrevComments(setComments, setLastFetchTime);
@@ -42,22 +43,27 @@ function App() {
           setFooterStatus("");
           setSendName(c.name);
           setSendContent(c.content);
+          setEditExpand(true);
         }}
       />
       <a name="latest"></a>
       <EditForm
+        editExpand={editExpand}
+        setEditExpand={setEditExpand}
         status={footerStatus}
         editId={editId}
         onCancel={() => {
           setEditId(-1);
           setSendName("");
           setSendContent("");
+          setEditExpand(false);
         }}
         onDelete={async () => {
           await action.del(editId, setFooterStatus, setLastFetchTime, () => {
             setEditId(-1);
             setSendName("");
             setSendContent("");
+            setEditExpand(false);
           });
         }}
         name={sendName}

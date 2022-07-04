@@ -9,7 +9,13 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
 import { useState, useEffect } from 'react'
+
 export default function EditForm(props){
   const [ctrlKey, setCtrlKey] = useState(false);
 
@@ -17,90 +23,83 @@ export default function EditForm(props){
     <>
     <Toolbar />
     <AppBar position="fixed" color="inherit" sx={{top: 'auto', bottom: 0, }}>
-    <Stack spacing={1}>
-      <Box />
-      <Box>
-      <Grid container spacing={2} alignItems="center">
-      <Grid item />
-      {
-        props.status || (
-          props.editId == -1 ?
-            <>
-              <Grid item sx>
-              <Typography variant="caption" gutterBottom>
-                新しいコメントを送信
-              </Typography>
-              </Grid>
-            </>
-          :
-            <>
-              <Grid item>
-                <Typography variant="caption" gutterBottom>
-                コメントを編集
-                </Typography>
-              </Grid>
-              <Grid item>
-                <ButtonGroup variant="outlined" size="small">
-                  <Button onClick={props.onCancel}>キャンセル</Button>
-                  <Button onClick={props.onDelete} startIcon={<DeleteIcon />}>コメントを削除</Button>
-                </ButtonGroup>
-              </Grid>
-            </>
-        )
-      }
-      <Grid item />
-      </Grid>
-      </Box>
-      <Box>
-      <Grid container spacing={2} alignItems="flex-end">
-        <Grid item />
-        <Grid item xs={12} sm={3} md={2} lg={2} xl={1}>
-          <TextField
-            label="名前"
-            variant="standard"
-            value={props.name}
-            onChange={(e) => {props.setName(e.target.value);}}
-            fullWidth
-          />
+    <Accordion
+      expanded={props.editExpand}
+      onChange={(event, newExpanded) => {
+        props.setEditExpand(newExpanded);
+      }}
+    >
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+      >
+        <Typography>
+          {
+            props.status ||
+            props.editId == -1 ?
+              "新しいコメントを送信"
+            :
+              "コメントを編集"
+          }
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails
+        sx={{marginTop: -1}}
+      >
+        <Grid container spacing={2} alignItems="flex-end">
+          { props.editId == -1 ||
+            <Grid item xs={12}>
+              <ButtonGroup variant="outlined" size="small">
+                <Button onClick={props.onCancel}>キャンセル</Button>
+                <Button onClick={props.onDelete} startIcon={<DeleteIcon />}>コメントを削除</Button>
+              </ButtonGroup>
+            </Grid>
+          }
+          <Grid item xs={12} sm={3} md={2} lg={2} xl={1}>
+            <TextField
+              label="名前"
+              variant="standard"
+              value={props.name}
+              onChange={(e) => {props.setName(e.target.value);}}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm md lg xl>
+            <TextField
+              label="コメント(Ctrl+Enterで送信)"
+              variant="standard"
+              multiline
+              maxRows={4}
+              value={props.content}
+              onChange={(e) => {props.setContent(e.target.value);}}
+              onKeyDown={(e) => {
+                if(e.keyCode === 17){
+                  setCtrlKey(true);
+                }
+                if(e.keyCode === 13 && ctrlKey){
+                  props.onSend();
+                }
+              }}
+              onKeyUp={(e) => {
+                if(e.keyCode === 17){
+                  setCtrlKey(false);
+                }
+              }}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm="auto" md="auto" lg="auto" xl="auto">
+            <Button
+              variant="contained"
+              onClick={props.onSend}
+              startIcon={<SendIcon />}
+            >
+              送信
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm md lg xl>
-          <TextField
-            label="コメント(Ctrl+Enterで送信)"
-            variant="standard"
-            multiline
-            maxRows={4}
-            value={props.content}
-            onChange={(e) => {props.setContent(e.target.value);}}
-            onKeyDown={(e) => {
-              if(e.keyCode === 17){
-                setCtrlKey(true);
-              }
-              if(e.keyCode === 13 && ctrlKey){
-                props.onSend();
-              }
-            }}
-            onKeyUp={(e) => {
-              if(e.keyCode === 17){
-                setCtrlKey(false);
-              }
-            }}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm="auto" md="auto" lg="auto" xl="auto">
-          <Button
-            variant="contained"
-            onClick={props.onSend}
-            startIcon={<SendIcon />}
-          >
-            送信
-          </Button>
-        </Grid>
-        <Grid item />
-      </Grid>
-      </Box>
-      <Box />
-    </Stack>
+      </AccordionDetails>
+    </Accordion>
+
     </AppBar>
     </>
   )
