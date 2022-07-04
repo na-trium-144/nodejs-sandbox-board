@@ -17,12 +17,12 @@ const {
 } = require("@prisma/client");
 const client = new PrismaClient();
 
-const tf = require('@tensorflow/tfjs');
-const toxicity = require('@tensorflow-models/toxicity');
-var txModel = undefined;
-toxicity.load(0.9).then((model) => {
-  txModel = model;
-});
+// const tf = require('@tensorflow/tfjs');
+// const toxicity = require('@tensorflow-models/toxicity');
+// var txModel = undefined;
+// toxicity.load(0.9).then((model) => {
+//   txModel = model;
+// });
 
 async function commentDelete(id) {
   try {
@@ -52,24 +52,24 @@ app.post("/delete", async (request, response) => {
   response.json({status: status, time:time});
 });
 async function txCheck(content) {
-  var txResult = [];
-  try {
-    const txPrediction = await txModel.classify(content);
-    console.log(txPrediction.map((p) => ({
-      label: p.label,
-      match: p.results[0].match
-    })));
-    for (const p of txPrediction) {
-      if (p.results[0].match === true) {
-        txResult.push(p.label);
-      }
-    }
-    if (txResult.length > 0) {
-      content = "[有害度検知: " + txResult.join(",") + "]"
-    }
-  } catch {
-
-  }
+  // var txResult = [];
+  // try {
+  //   const txPrediction = await txModel.classify(content);
+  //   console.log(txPrediction.map((p) => ({
+  //     label: p.label,
+  //     match: p.results[0].match
+  //   })));
+  //   for (const p of txPrediction) {
+  //     if (p.results[0].match === true) {
+  //       txResult.push(p.label);
+  //     }
+  //   }
+  //   if (txResult.length > 0) {
+  //     content = "[有害度検知: " + txResult.join(",") + "]"
+  //   }
+  // } catch {
+  //
+  // }
   return content;
 }
 
