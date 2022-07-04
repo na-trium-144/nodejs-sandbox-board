@@ -1,5 +1,6 @@
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -50,7 +51,12 @@ export default function EditForm(props){
             <Grid item xs={12}>
               <ButtonGroup variant="outlined" size="small">
                 <Button onClick={props.onCancel}>キャンセル</Button>
-                <Button onClick={props.onDelete} startIcon={<DeleteIcon />}>コメントを削除</Button>
+                <Button
+                  onClick={props.onDelete}
+                  startIcon={<DeleteIcon />}
+                >
+                  コメントを削除
+                </Button>
               </ButtonGroup>
             </Grid>
           }
@@ -88,13 +94,15 @@ export default function EditForm(props){
             />
           </Grid>
           <Grid item xs={12} sm="auto" md="auto" lg="auto" xl="auto">
-            <Button
+            <LoadingButton
               variant="contained"
               onClick={props.onSend}
               startIcon={<SendIcon />}
+              loading={props.sendProgress}
+              loadingPosition="start"
             >
               送信
-            </Button>
+            </LoadingButton>
           </Grid>
         </Grid>
       </AccordionDetails>

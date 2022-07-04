@@ -15,6 +15,8 @@ function App() {
   const [sendContent, setSendContent] = useState("")
   const [lastFetchTime, setLastFetchTime] = useState(new Date().toJSON());
   const [editExpand, setEditExpand] = useState(false);
+  const [sendProgress, setSendProgress] = useState(false);
+  // const [deleteProgress, setDeleteProgress] = useState(false);
 
   useEffect(() => {
     action.getPrevComments(setComments, setLastFetchTime);
@@ -59,23 +61,28 @@ function App() {
           setEditExpand(false);
         }}
         onDelete={async () => {
+          // setDeleteProgress(true);
           await action.del(editId, setFooterStatus, setLastFetchTime, () => {
             setEditId(-1);
             setSendName("");
             setSendContent("");
             setEditExpand(false);
           });
+          // setDeleteProgress(false);
         }}
         name={sendName}
         setName={setSendName}
         content={sendContent}
         setContent={setSendContent}
         onSend={async () => {
+          setSendProgress(true);
           await action.send(editId, sendName, sendContent, setFooterStatus, setLastFetchTime, () => {
             setEditId(-1);
             setSendContent("");
           });
+          setSendProgress(false);
         }}
+        sendProgress={sendProgress}
       />
     </div>
   )
