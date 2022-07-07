@@ -14,7 +14,8 @@ import IconButton from '@mui/material/IconButton';
 function Comment(props){
   const c = props.item;
   return(
-    <Box sx={{
+    <Box
+      sx={{
         width:'100%',
         '&:hover': {
           backgroundColor: '#ffd',

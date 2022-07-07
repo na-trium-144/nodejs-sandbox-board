@@ -14,15 +14,31 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
+import Slide from '@mui/material/Slide';
+import ClickAwayListener from '@mui/base/ClickAwayListener';
 
 import { useState, useEffect } from 'react'
 
 export default function EditForm(props){
   const [ctrlKey, setCtrlKey] = useState(false);
+  const editShowTrigger = useScrollTrigger();
+  useEffect(()=>{
+    if(!editShowTrigger && props.editId === -1){
+      props.setEditExpand(false);
+    }
+  }, [editShowTrigger]);
 
   return(
     <>
     <Toolbar />
+    <ClickAwayListener
+      onClickAway={() => {
+        if(props.editId === -1){
+          props.setEditExpand(false);
+        }
+      }}
+    >
     <AppBar position="fixed" color="inherit" sx={{top: 'auto', bottom: 0, }}>
     <Accordion
       expanded={props.editExpand}
@@ -78,7 +94,7 @@ export default function EditForm(props){
               value={props.content}
               onChange={(e) => {props.setContent(e.target.value);}}
               onKeyDown={(e) => {
-                if(e.keyCode === 17 || e.keyCode == 91 || e.KeyCode == 93){
+                if(e.keyCode === 17 || e.keyCode == 91 || e.keyCode == 93){
                   setCtrlKey(true);
                 }
                 if(e.keyCode === 13 && ctrlKey){
@@ -86,7 +102,7 @@ export default function EditForm(props){
                 }
               }}
               onKeyUp={(e) => {
-                if (e.keyCode === 17 || e.keyCode == 91 || e.KeyCode == 93){
+                if (e.keyCode === 17 || e.keyCode == 91 || e.keyCode == 93){
                   setCtrlKey(false);
                 }
               }}
@@ -107,8 +123,8 @@ export default function EditForm(props){
         </Grid>
       </AccordionDetails>
     </Accordion>
-
     </AppBar>
+    </ClickAwayListener>
     </>
   )
 }
