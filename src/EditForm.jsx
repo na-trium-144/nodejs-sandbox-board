@@ -78,7 +78,7 @@ export default function EditForm(props){
               value={props.content}
               onChange={(e) => {props.setContent(e.target.value);}}
               onKeyDown={(e) => {
-                if(e.keyCode === 17){
+                if(e.keyCode === 17 || e.keyCode == 91 || e.KeyCode == 93){
                   setCtrlKey(true);
                 }
                 if(e.keyCode === 13 && ctrlKey){
@@ -86,7 +86,7 @@ export default function EditForm(props){
                 }
               }}
               onKeyUp={(e) => {
-                if(e.keyCode === 17){
+                if (e.keyCode === 17 || e.keyCode == 91 || e.KeyCode == 93){
                   setCtrlKey(false);
                 }
               }}
