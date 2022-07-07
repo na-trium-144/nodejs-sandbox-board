@@ -48,7 +48,6 @@ function App() {
           setEditExpand(true);
         }}
       />
-      <a name="latest"></a>
       <EditForm
         editExpand={editExpand}
         setEditExpand={setEditExpand}

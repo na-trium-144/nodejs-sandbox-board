@@ -17,21 +17,48 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import Slide from '@mui/material/Slide';
 import ClickAwayListener from '@mui/base/ClickAwayListener';
+import Fade from '@mui/material/Fade';
+import Fab from '@mui/material/Fab';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 import { useState, useEffect } from 'react'
 
 export default function EditForm(props){
   const [ctrlKey, setCtrlKey] = useState(false);
-  const editShowTrigger = useScrollTrigger();
+  const scrollBottomTrigger = useScrollTrigger();
   useEffect(()=>{
-    if(!editShowTrigger && props.editId === -1){
+    if(!scrollBottomTrigger && props.editId === -1){
       props.setEditExpand(false);
     }
-  }, [editShowTrigger]);
+  }, [scrollBottomTrigger]);
 
   return(
     <>
-    <Toolbar />
+    <Toolbar id="latest" />
+    <Fade in={!scrollBottomTrigger}>
+      <Box
+        sx={{ position: 'fixed', bottom: 80, right: 40 }}
+      >
+        <Fab
+          variant="extended"
+          size="small"
+          color="primary"
+          onClick={(event) => {
+            const anchor = (
+              (event.target).ownerDocument || document
+            ).querySelector('#latest');
+            if (anchor) {
+              anchor.scrollIntoView({
+                block: 'center',
+              });
+            }
+          }}
+        >
+          <KeyboardArrowDownIcon />
+          最新のコメント
+        </Fab>
+      </Box>
+    </Fade>
     <ClickAwayListener
       onClickAway={() => {
         if(props.editId === -1){
